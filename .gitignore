@@ -29,3 +29,6 @@ dist-ssr
 # Build output
 /dist
 /.cache
+
+# Superpowers
+.superpowers/

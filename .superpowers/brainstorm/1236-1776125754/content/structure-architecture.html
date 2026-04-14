@@ -1,0 +1,164 @@
+<h2>Project Structure & Component Architecture</h2>
+<p class="subtitle">Folder organization and component hierarchy</p>
+
+<div class="mockup">
+  <div class="mockup-header">File & Component Structure</div>
+  <div class="mockup-body" style="display: flex; gap: 24px; background: #0d1117; color: #c9d1d9; font-family: 'Monaco', monospace; font-size: 12px; padding: 20px;">
+
+    <!-- Left: Folder Structure -->
+    <div style="flex: 1;">
+      <h3 style="color: #58a6ff; font-size: 13px; font-weight: 600; margin-bottom: 12px;">📁 Folder Structure</h3>
+      <div style="background: #161b22; padding: 12px; border-radius: 6px; line-height: 1.8; color: #8b949e;">
+        <div style="color: #c9d1d9;"><strong>workflow-app/</strong></div>
+        <div style="margin-left: 16px;">
+          <div>📁 src/</div>
+          <div style="margin-left: 16px; color: #8b949e;">
+            <div style="color: #c9d1d9;">📁 <strong>components/</strong></div>
+            <div style="margin-left: 16px; color: #8b949e;">
+              <div>├─ Layout/</div>
+              <div style="margin-left: 16px;">├─ Sidebar.jsx</div>
+              <div style="margin-left: 16px;">├─ TopBar.jsx</div>
+              <div style="margin-left: 16px;">└─ MainContent.jsx</div>
+              <div>├─ <strong>Pages/</strong></div>
+              <div style="margin-left: 16px;">├─ Dashboard.jsx</div>
+              <div style="margin-left: 16px;">├─ Projects.jsx</div>
+              <div style="margin-left: 16px;">├─ Tasks.jsx</div>
+              <div style="margin-left: 16px;">├─ Reports.jsx</div>
+              <div style="margin-left: 16px;">└─ Settings.jsx</div>
+              <div>├─ <strong>TaskDetail/</strong></div>
+              <div style="margin-left: 16px;">├─ TaskDetailPanel.jsx</div>
+              <div style="margin-left: 16px;">├─ PomodoroTimer.jsx</div>
+              <div style="margin-left: 16px;">├─ CommentThread.jsx</div>
+              <div style="margin-left: 16px;">└─ SessionLog.jsx</div>
+              <div>├─ <strong>Projects/</strong></div>
+              <div style="margin-left: 16px;">├─ ProjectCard.jsx</div>
+              <div style="margin-left: 16px;">└─ ProjectGrid.jsx</div>
+              <div>├─ <strong>Tasks/</strong></div>
+              <div style="margin-left: 16px;">├─ TaskListItem.jsx</div>
+              <div style="margin-left: 16px;">├─ TaskList.jsx</div>
+              <div style="margin-left: 16px;">└─ TaskFilter.jsx</div>
+            </div>
+          </div>
+
+          <div style="color: #c9d1d9; margin-top: 12px;">📁 <strong>hooks/</strong></div>
+          <div style="margin-left: 16px; color: #8b949e;">
+            <div>├─ useProjects.js</div>
+            <div>├─ useTasks.js</div>
+            <div>├─ usePomodoroTimer.js</div>
+            <div>└─ useLocalStorage.js</div>
+          </div>
+
+          <div style="color: #c9d1d9; margin-top: 12px;">📁 <strong>data/</strong></div>
+          <div style="margin-left: 16px; color: #8b949e;">
+            <div>├─ projects.json</div>
+            <div>├─ tasks.json</div>
+            <div>└─ pomodoro-sessions.json</div>
+          </div>
+
+          <div style="color: #c9d1d9; margin-top: 12px;">📁 <strong>styles/</strong></div>
+          <div style="margin-left: 16px; color: #8b949e;">
+            <div>├─ global.css</div>
+            <div>├─ theme.css (dark mode)</div>
+            <div>├─ layout.css</div>
+            <div>└─ components.css</div>
+          </div>
+
+          <div style="color: #c9d1d9; margin-top: 12px;">📁 <strong>utils/</strong></div>
+          <div style="margin-left: 16px; color: #8b949e;">
+            <div>├─ dateHelpers.js</div>
+            <div>├─ storageManager.js</div>
+            <div>└─ statusHelpers.js</div>
+          </div>
+
+          <div style="color: #c9d1d9; margin-top: 12px;">App.jsx</div>
+          <div style="color: #c9d1d9;">main.jsx</div>
+        </div>
+
+        <div style="color: #c9d1d9; margin-top: 12px;"><strong>public/</strong></div>
+        <div style="color: #c9d1d9; margin-top: 12px;"><strong>vite.config.js</strong></div>
+        <div style="color: #c9d1d9;"><strong>package.json</strong></div>
+      </div>
+    </div>
+
+    <!-- Right: Component Tree -->
+    <div style="flex: 1;">
+      <h3 style="color: #58a6ff; font-size: 13px; font-weight: 600; margin-bottom: 12px;">🏗️ Component Hierarchy</h3>
+      <div style="background: #161b22; padding: 12px; border-radius: 6px; line-height: 1.9; color: #8b949e; font-size: 11px;">
+        <div style="color: #c9d1d9;"><strong>App</strong></div>
+        <div style="margin-left: 16px;">
+          <div>├─ <span style="color: #c9d1d9;"><strong>Sidebar</strong></span> (navigation)</div>
+          <div>├─ <span style="color: #c9d1d9;"><strong>TopBar</strong></span></div>
+          <div style="margin-left: 16px;">
+            │  ├─ SearchBar</div>
+          <div style="margin-left: 16px;">
+            │  ├─ NewButton</div>
+          <div style="margin-left: 16px;">
+            │  └─ ProfileMenu</div>
+          <div>├─ <span style="color: #c9d1d9;"><strong>MainContent</strong></span> (page router)</div>
+          <div style="margin-left: 16px;">
+            │  ├─ Dashboard</div>
+          <div style="margin-left: 16px;">
+            │  │  ├─ <span style="color: #58a6ff;">ProjectGrid</span></div>
+          <div style="margin-left: 16px;">
+            │  │  │  └─ ProjectCard (×N)</div>
+          <div style="margin-left: 16px;">
+            │  │  └─ <span style="color: #58a6ff;">WeeklyTasksList</span></div>
+          <div style="margin-left: 16px;">
+            │  │     └─ TaskListItem (×N)</div>
+          <div style="margin-left: 16px;">
+            │  │</div>
+          <div style="margin-left: 16px;">
+            │  ├─ Projects</div>
+          <div style="margin-left: 16px;">
+            │  │  └─ ProjectGrid</div>
+          <div style="margin-left: 16px;">
+            │  │</div>
+          <div style="margin-left: 16px;">
+            │  ├─ Tasks</div>
+          <div style="margin-left: 16px;">
+            │  │  ├─ TaskFilter</div>
+          <div style="margin-left: 16px;">
+            │  │  └─ TaskList</div>
+          <div style="margin-left: 16px;">
+            │  │</div>
+          <div style="margin-left: 16px;">
+            │  ├─ Reports (future)</div>
+          <div style="margin-left: 16px;">
+            │  └─ Settings (future)</div>
+          <div>└─ <span style="color: #c9d1d9;"><strong>TaskDetailPanel</strong></span> (conditional)</div>
+          <div style="margin-left: 16px;">
+            └─ (slides in when task selected)</div>
+          <div style="margin-left: 32px;">
+            ├─ TaskInfo</div>
+          <div style="margin-left: 32px;">
+            ├─ <span style="color: #58a6ff;">PomodoroTimer</span></div>
+          <div style="margin-left: 48px;">
+            │  ├─ WorkRestToggle</div>
+          <div style="margin-left: 48px;">
+            │  ├─ TimerDisplay</div>
+          <div style="margin-left: 48px;">
+            │  ├─ TimerControls</div>
+          <div style="margin-left: 48px;">
+            │  └─ <span style="color: #58a6ff;">SessionLog</span></div>
+          <div style="margin-left: 32px;">
+            └─ <span style="color: #58a6ff;">CommentThread</span></div>
+          <div style="margin-left: 48px;">
+              ├─ CommentList</div>
+          <div style="margin-left: 48px;">
+              └─ CommentInput</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<p style="margin-top: 24px; color: #8b949e; font-size: 12px;">
+  <strong>Key organizational principles:</strong><br>
+  • <strong>components/</strong> organized by feature domain (Layout, Pages, TaskDetail, Projects, Tasks)<br>
+  • <strong>hooks/</strong> contain shared state logic (projects, tasks, timer, storage)<br>
+  • <strong>data/</strong> holds JSON files for Phase 1 (will be replaced with backend in Phase 2)<br>
+  • <strong>styles/</strong> separated by concern (global, theme, layout, components)<br>
+  • <strong>TaskDetailPanel</strong> is a conditional overlay that doesn't change the page<br>
+  • All data flows through custom hooks to a single source of truth
+</p>

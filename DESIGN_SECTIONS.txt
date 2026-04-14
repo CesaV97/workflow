@@ -1,0 +1,911 @@
+================================================================================
+                WORKFLOW APP - PHASE 1 DESIGN SPECIFICATION
+                        All Design Sections Summary
+================================================================================
+
+PROJECT OVERVIEW
+================================================================================
+Application: Personal Productivity & Workflow Management
+Phase: Phase 1 (MVP)
+Objective: Help manage projects, tasks, and time tracking with Pomodoro timers
+Target User: Individual/Personal use
+Tech Stack: React, Vite, JavaScript, CSS
+
+================================================================================
+1. LAYOUT & VISUAL DESIGN
+================================================================================
+
+MAIN DASHBOARD STRUCTURE:
+------------------------
+- Left Sidebar (fixed):
+  * Logo: "⚡ WorkFlow"
+  * Navigation: Dashboard, Proyectos, Tareas, Reportes, Configuración
+  * Active indicator on current page
+
+- Top Bar:
+  * Search bar (buscar proyectos o tareas)
+  * "+ Nuevo" button (create new project/task)
+  * Profile menu
+
+- Main Content Area:
+  * Projects Overview Section (top):
+    - Title: "PROYECTOS ACTIVOS"
+    - Grid layout of project cards
+    - Each card shows: project name + status badge (Active/On Hold/Completed)
+    - Minimal design (name + status only)
+
+  * Weekly Tasks Section (below):
+    - Title: "ESTA SEMANA"
+    - Tasks grouped by date (HOY, MAÑANA, PRÓXIMOS DÍAS)
+    - Each task shows: title + project name + status
+    - Clickable to open task detail panel
+
+- Task Detail Panel (right side, conditional):
+  * Slides in when task is clicked
+  * Can be closed with ✕ button
+  * Returns to dashboard view when closed
+  * Fixed width: ~380px
+
+VISUAL STYLE:
+-------------
+- Dark mode (GitHub/Supabase inspired)
+- Background: #0d1117
+- Cards/containers: #161b22
+- Text: #c9d1d9
+- Accents: #58a6ff (blue), #238636 (green)
+- Status badges: Green (Active), Amber (On Hold/Paused), Red (Blocked)
+- Typography: Clean, sans-serif
+- Minimal, elegant, no visual clutter
+
+================================================================================
+2. TASK DETAIL PANEL
+================================================================================
+
+PANEL CONTENTS (right-side slide-out):
+--------------------------------------
+
+A. Task Header
+   - Task title (h2)
+   - Project name (secondary text)
+   - Close button (✕)
+
+B. Task Information
+   - Status (dropdown/badge): To Do, In Progress, Paused, Blocked, Done
+   - Dates: Start date, End date
+   - Description (read-only or editable field)
+
+C. Pomodoro Timer Section
+   ├─ Work/Rest Toggle
+   │  ├─ "⏱ Trabajo" button (green, default)
+   │  └─ "☕ Descanso" button (amber)
+   │
+   ├─ Timer Display
+   │  └─ Large time display: MM:SS format (e.g., 25:00)
+   │
+   ├─ Adjust Duration (Kitchen Clock Style)
+   │  ├─ "−" button
+   │  ├─ Display current duration (e.g., "25 min")
+   │  └─ "+" button
+   │
+   ├─ Timer Controls
+   │  ├─ "▶ Iniciar" button (green)
+   │  ├─ "⏸ Pausar" button (gray)
+   │  └─ "↻ Reset" button (gray)
+   │
+   └─ Session Log (Classified)
+      - List of completed sessions with badges
+      - TRABAJO sessions: Green badge + date/time + duration
+      - DESCANSO sessions: Amber badge + date/time + duration
+      - Example: [TRABAJO] Apr 13, 2:30 PM - 2:55 PM (25 min)
+
+D. Comments Section
+   ├─ Title: "Comentarios (N)"
+   ├─ Comment List
+   │  └─ Each comment shows: Author, Date/Time, Comment text
+   │     Example: "Tú" | "Apr 13, 2:15 PM" | "Started Vite setup..."
+   └─ Add Comment Input
+      ├─ Textarea: "Agregar comentario..."
+      └─ "+ Agregar" button (green)
+         - On submit: timestamp added automatically
+         - Comment appears in list
+
+================================================================================
+3. PROJECT STRUCTURE (Feature-Based Architecture)
+================================================================================
+
+FOLDER ORGANIZATION:
+--------------------
+
+src/
+├── features/                          [Feature-based modules]
+│   ├── Dashboard/
+│   │   ├── Dashboard.jsx
+│   │   ├── ProjectGrid.jsx
+│   │   ├── WeeklyTasksList.jsx
+│   │   └── Dashboard.css
+│   │
+│   ├── Projects/
+│   │   ├── Projects.jsx
+│   │   ├── ProjectCard.jsx
+│   │   ├── ProjectList.jsx
+│   │   ├── ProjectDetail.jsx
+│   │   ├── ProjectForm.jsx
+│   │   └── Projects.css
+│   │
+│   ├── Tasks/
+│   │   ├── Tasks.jsx
+│   │   ├── TaskListItem.jsx
+│   │   ├── TaskList.jsx
+│   │   ├── TaskFilter.jsx
+│   │   ├── TaskForm.jsx
+│   │   └── Tasks.css
+│   │
+│   ├── TaskDetail/
+│   │   ├── TaskDetailPanel.jsx
+│   │   ├── TaskInfo.jsx
+│   │   └── TaskDetail.css
+│   │
+│   ├── Pomodoro/
+│   │   ├── PomodoroTimer.jsx
+│   │   ├── WorkRestToggle.jsx
+│   │   ├── TimerDisplay.jsx
+│   │   ├── TimerControls.jsx
+│   │   ├── SessionLog.jsx
+│   │   └── Pomodoro.css
+│   │
+│   ├── Comments/
+│   │   ├── CommentThread.jsx
+│   │   ├── CommentList.jsx
+│   │   ├── CommentItem.jsx
+│   │   ├── CommentInput.jsx
+│   │   └── Comments.css
+│   │
+│   ├── Reports/
+│   │   ├── Reports.jsx
+│   │   └── Reports.css
+│   │
+│   └── Settings/
+│       ├── Settings.jsx
+│       └── Settings.css
+│
+├── components/                        [Shared/Common components]
+│   ├── Layout/
+│   │   ├── Sidebar.jsx
+│   │   ├── TopBar.jsx
+│   │   ├── MainContent.jsx
+│   │   └── Layout.css
+│   │
+│   └── Common/
+│       ├── Button.jsx
+│       ├── Modal.jsx
+│       ├── Badge.jsx
+│       ├── SearchBar.jsx
+│       └── Common.css
+│
+├── data/                              [Data layer with entities & storage]
+│   ├── entities/
+│   │   ├── Project.js                [Project schema, factory, constants]
+│   │   ├── Task.js                   [Task schema, factory, constants]
+│   │   ├── Comment.js                [Comment schema, factory]
+│   │   └── PomodoroSession.js        [Session schema, factory, constants]
+│   │
+│   └── storage/
+│       ├── projects.json             [JSON storage - projects]
+│       ├── tasks.json                [JSON storage - tasks]
+│       ├── comments.json             [JSON storage - comments]
+│       └── pomodoroSessions.json     [JSON storage - sessions]
+│
+├── hooks/                             [Custom React hooks]
+│   ├── useProjects.js
+│   ├── useTasks.js
+│   ├── usePomodoroTimer.js
+│   └── useLocalStorage.js
+│
+├── styles/                            [Global styles]
+│   ├── global.css                    [Resets, base styles]
+│   └── theme.css                     [Dark mode variables]
+│
+├── utils/                             [Utility functions]
+│   ├── dateHelpers.js
+│   ├── storageManager.js
+│   └── statusHelpers.js
+│
+├── constants/                         [Application constants]
+│   ├── taskStatus.js
+│   ├── projectStatus.js
+│   └── pomodoroConfig.js
+│
+├── App.jsx
+└── main.jsx
+
+CSS ORGANIZATION:
+-----------------
+Feature-level styling: Each feature folder has ONE CSS file
+- Dashboard.css contains styles for: Dashboard, ProjectGrid, WeeklyTasksList
+- Projects.css contains styles for: Projects, ProjectCard, ProjectList, etc.
+- Pomodoro.css contains styles for: PomodoroTimer, WorkRestToggle, etc.
+
+Global CSS only for:
+- CSS variables (theme colors, spacing, typography)
+- Base element resets
+- Utility classes (minimal)
+
+Benefits:
+- Easy to maintain and scale
+- Can delete a feature folder and its CSS together
+- No orphaned stylesheets
+- Clear boundaries between features
+
+================================================================================
+4. DATA MODEL & ENTITIES
+================================================================================
+
+ENTITY DEFINITIONS:
+-------------------
+
+PROJECT:
+  - id: string (unique identifier, auto-generated via generateId())
+  - name: string (required)
+  - description: string
+  - startDate: ISO date string
+  - endDate: ISO date string
+  - status: enum (Active, On Hold, Completed, Archived)
+  - createdAt: ISO timestamp
+  - updatedAt: ISO timestamp
+
+TASK:
+  - id: string (unique identifier, auto-generated via generateId())
+  - projectId: string (reference to parent project)
+  - name: string (required)
+  - description: string
+  - startDate: ISO date string
+  - endDate: ISO date string
+  - status: enum (To Do, In Progress, Paused, Blocked, Done)
+  - createdAt: ISO timestamp
+  - updatedAt: ISO timestamp
+
+COMMENT:
+  - id: string (unique identifier, auto-generated via generateId())
+  - taskId: string (reference to parent task, required)
+  - text: string (required)
+  - createdAt: ISO timestamp
+
+POMODOROSESSION:
+  - id: string (unique identifier, auto-generated via generateId())
+  - taskId: string (reference to parent task, required)
+  - type: enum (Work, Rest)
+  - duration: number (in minutes)
+  - startTime: ISO timestamp
+  - endTime: ISO timestamp
+  - status: enum (Completed, Abandoned)
+
+ENTITY RELATIONSHIPS:
+---------------------
+
+Project (1) ──── (Many) Task
+  └─ Project.id is referenced by Task.projectId
+
+Task (1) ──── (Many) Comment
+  └─ Task.id is referenced by Comment.taskId
+
+Task (1) ──── (Many) PomodoroSession
+  └─ Task.id is referenced by PomodoroSession.taskId
+
+This normalized structure allows:
+- Comments to be queried independently of tasks
+- Pomodoro sessions to be queried independently of tasks
+- Easy filtering, sorting, and analytics
+- Better performance when tasks have many comments/sessions
+- Cleaner separation of concerns
+
+ENTITY FILES STRUCTURE:
+-----------------------
+
+Each entity file (e.g., Task.js) exports:
+
+1. SCHEMA: Default shape of the entity
+   export const taskSchema = { id, projectId, name, ... }
+
+2. CONSTANTS: Status enums and config
+   export const TASK_STATUS = { TO_DO, IN_PROGRESS, PAUSED, BLOCKED, DONE }
+   export const TASK_DEFAULTS = { defaultStatus: 'To Do' }
+
+3. FACTORY FUNCTION: Create new entity instances
+   export function createTask(data) {
+     return { ...taskSchema, ...data, id: generateId(), createdAt: new Date().toISOString(), ... }
+   }
+
+4. OPTIONAL HELPERS: Validation, formatting
+   export function isValidTask(task) { ... }
+   export function formatTaskDisplay(task) { ... }
+
+STORAGE (Phase 1) - NORMALIZED STRUCTURE:
+------------------------------------------
+- Format: JSON files in src/data/storage/
+- One file per entity type (projects.json, tasks.json, comments.json, pomodoroSessions.json)
+- Simple array structure: [entity1, entity2, ...]
+- Entities linked by ID references (taskId, projectId)
+- Data persists across page refreshes via file system
+- Phase 2: Replace JSON files with REST API calls (entities stay the same)
+
+EXAMPLE STORAGE FILES:
+
+projects.json:
+[
+  { "id": "uuid-1", "name": "WorkFlow Dev", "status": "Active", ... }
+]
+
+tasks.json:
+[
+  { "id": "uuid-2", "projectId": "uuid-1", "name": "Setup React", "status": "In Progress", ... }
+]
+
+comments.json:
+[
+  { "id": "uuid-3", "taskId": "uuid-2", "text": "Started setup", "createdAt": "2026-04-13T14:30:00Z" },
+  { "id": "uuid-4", "taskId": "uuid-2", "text": "Config complete", "createdAt": "2026-04-13T16:45:00Z" }
+]
+
+pomodoroSessions.json:
+[
+  { "id": "uuid-5", "taskId": "uuid-2", "type": "Work", "duration": 25, "startTime": "...", "endTime": "...", "status": "Completed" },
+  { "id": "uuid-6", "taskId": "uuid-2", "type": "Rest", "duration": 5, "startTime": "...", "endTime": "...", "status": "Completed" }
+]
+
+QUERYING RELATED DATA:
+- To get all comments for a task: filter comments.json where taskId === taskId
+- To get all pomodoro sessions for a task: filter pomodoroSessions.json where taskId === taskId
+- To get all tasks for a project: filter tasks.json where projectId === projectId
+
+================================================================================
+5. STATE MANAGEMENT & HOOKS
+================================================================================
+
+CUSTOM HOOKS:
+-------------
+
+useProjects()
+├─ State:
+│  └─ projects: array of Project objects
+├─ Methods:
+│  ├─ getProjects(): returns all projects
+│  ├─ getProjectById(id): returns single project
+│  ├─ createProject(data): creates new project
+│  ├─ updateProject(id, data): updates project
+│  ├─ deleteProject(id): deletes project
+│  └─ getActiveProjects(): returns only Active projects
+└─ Returns: { projects, loading, error, ...methods }
+
+useTasks()
+├─ State:
+│  └─ tasks: array of Task objects
+├─ Methods:
+│  ├─ getTasksByProject(projectId): filter by project
+│  ├─ getTasksByWeek(): tasks with dates in current week
+│  ├─ getTodaysTasks(): tasks with today's date
+│  ├─ createTask(data): creates new task
+│  ├─ updateTask(id, data): updates task
+│  ├─ deleteTask(id): deletes task (cascades: delete comments & sessions)
+│  ├─ getTasksByStatus(status): filter by status
+│  ├─ getTaskComments(taskId): fetches comments from comments.json where taskId matches
+│  └─ getTaskPomodoroSessions(taskId): fetches sessions from pomodoroSessions.json where taskId matches
+└─ Returns: { tasks, loading, error, ...methods }
+
+usePomodoroTimer(taskId)
+├─ State:
+│  ├─ currentDuration: number (minutes)
+│  ├─ elapsedTime: number (seconds)
+│  ├─ mode: enum (Work, Rest)
+│  ├─ isRunning: boolean
+├─ Methods:
+│  ├─ startTimer(): starts countdown
+│  ├─ pauseTimer(): pauses countdown
+│  ├─ resetTimer(): resets to initial duration
+│  ├─ setDuration(minutes): adjusts duration
+│  ├─ switchMode(mode): switches Work/Rest mode
+│  ├─ logSession(): saves completed session to pomodoroSessions.json
+│  ├─ increaseDuration(): +1 minute
+│  └─ decreaseDuration(): -1 minute
+└─ Returns: { currentDuration, elapsedTime, isRunning, ...methods }
+
+useComments()
+├─ State:
+│  └─ comments: array of Comment objects
+├─ Methods:
+│  ├─ getCommentsByTask(taskId): fetches all comments for a task
+│  ├─ addComment(taskId, text): creates and saves new comment
+│  ├─ deleteComment(id): deletes comment
+│  └─ deleteCommentsByTask(taskId): deletes all comments for a task (cascade)
+└─ Returns: { comments, loading, error, ...methods }
+
+usePomodoroSessions()
+├─ State:
+│  └─ sessions: array of PomodoroSession objects
+├─ Methods:
+│  ├─ getSessionsByTask(taskId): fetches all sessions for a task
+│  ├─ createSession(taskId, sessionData): creates and saves new session
+│  ├─ deleteSession(id): deletes session
+│  ├─ deleteSessionsByTask(taskId): deletes all sessions for a task (cascade)
+│  ├─ getWorkSessions(taskId): filters only Work-type sessions
+│  └─ getRestSessions(taskId): filters only Rest-type sessions
+└─ Returns: { sessions, loading, error, ...methods }
+
+useLocalStorage()
+├─ Methods:
+│  ├─ loadData(filename): reads JSON file
+│  ├─ saveData(filename, data): writes JSON file
+│  └─ deleteData(filename): deletes file
+└─ Returns: { load, save, delete functions }
+
+NORMALIZED DATA FLOW:
+---------------------
+1. Components use domain-specific hooks (useTasks, useComments, usePomodoroSessions)
+2. Each hook manages one entity type and loads/saves to corresponding JSON file
+3. Related data is queried by filtering using ID references (taskId, projectId)
+4. No nested data structures - all relationships are via ID references
+5. Cascading deletes handled by hooks (deleteTask cascades to comments & sessions)
+
+DATA FLOW:
+----------
+1. Components use hooks to read/write state
+2. Hooks manage JSON file I/O operations
+3. Each hook handles one data domain (projects, tasks, etc.)
+4. NO global state management (Redux/Context) in Phase 1
+5. Hooks are sufficient for Phase 1 scope
+6. Phase 2: Can upgrade to Context API or Redux if needed
+
+================================================================================
+6. USER WORKFLOWS & INTERACTIONS
+================================================================================
+
+WORKFLOW 1: CREATE A NEW PROJECT
+--------------------------------
+1. User clicks "+ Nuevo" button in top bar
+2. Context menu appears (or modal if single action)
+3. User selects "Crear Proyecto"
+4. ProjectForm modal opens with fields:
+   - Project name (required)
+   - Description (optional)
+   - Start date
+   - End date
+5. User submits form
+6. Project created with status "Active"
+7. Project appears in dashboard "PROYECTOS ACTIVOS" section
+8. Modal closes
+
+WORKFLOW 2: CREATE A TASK
+------------------------
+1. User clicks "+ Nuevo" button
+2. User selects "Crear Tarea"
+3. TaskForm modal opens with fields:
+   - Task name (required)
+   - Project (dropdown, can be pre-selected)
+   - Description
+   - Start date
+   - End date
+   - Status (defaults to "To Do")
+4. User submits form
+5. Task created and added to project
+6. If endDate is this week, appears in "ESTA SEMANA" section
+7. Modal closes
+
+WORKFLOW 3: WORK ON A TASK (Primary Workflow)
+---------------------------------------------
+1. User sees task in "ESTA SEMANA" section (grouped by date)
+2. User clicks task → TaskDetailPanel slides in from right
+3. Panel shows:
+   - Task details (name, project, dates, description)
+   - Status (editable)
+   - Pomodoro timer section
+   - Comments thread
+4. User can perform these actions:
+
+   A. START POMODORO SESSION:
+      - Select Work or Rest mode (toggle button)
+      - Adjust duration with +/- buttons (kitchen clock style)
+      - Click "▶ Iniciar" to start countdown
+      - Timer counts down with MM:SS display
+      - User can "⏸ Pausar" or "↻ Reset" at any time
+      - When timer reaches 0:00, session is logged automatically
+      - Session appears in "Historial de Sesiones" with:
+        * Type badge (TRABAJO=green, DESCANSO=amber)
+        * Start time, end time, duration
+
+   B. ADD COMMENTS:
+      - User types in "Agregar comentario..." field
+      - User clicks "+ Agregar" button
+      - Comment saved with automatic timestamp
+      - Comment appears in thread with date/time
+
+   C. CHANGE STATUS:
+      - User clicks status badge
+      - Dropdown appears: To Do, In Progress, Paused, Blocked, Done
+      - User selects new status
+      - Task status updates immediately
+
+5. User closes panel by clicking ✕ or clicking outside
+6. Returns to dashboard view
+7. All changes persist to JSON files immediately
+
+WORKFLOW 4: COMPLETE A TASK
+---------------------------
+1. User opens task detail panel
+2. User changes status to "Done"
+3. Task disappears from "ESTA SEMANA" view
+4. Task still exists in Tasks page
+5. In Tasks page, user can filter by status to see completed tasks
+6. Completed tasks remain in system (not deleted)
+
+WORKFLOW 5: VIEW ALL TASKS
+--------------------------
+1. User clicks "Tareas" in sidebar
+2. Tasks page loads showing all tasks (across all projects)
+3. Default filter: show all statuses
+4. User can apply filters:
+   - By project
+   - By status
+   - By date range
+5. User can search for specific tasks
+6. Clicking a task opens detail panel (same as dashboard flow)
+
+================================================================================
+7. ERROR HANDLING & EDGE CASES
+================================================================================
+
+VALIDATION RULES:
+-----------------
+
+1. PROJECT VALIDATION:
+   - name: required, min 1 character
+   - endDate >= startDate (if both provided)
+   - status: must be valid enum value
+
+2. TASK VALIDATION:
+   - name: required, min 1 character
+   - projectId: required, must reference existing project
+   - endDate >= startDate (if both provided)
+   - status: must be valid enum value
+
+3. POMODORO TIMER VALIDATION:
+   - Duration: must be >= 1 minute (prevent 0 or negative)
+   - endTime > startTime (for completed sessions)
+   - taskId: required, must reference existing task
+
+4. COMMENT VALIDATION:
+   - text: required, min 1 character
+   - taskId: required, must reference existing task
+
+EDGE CASES TO HANDLE:
+---------------------
+
+1. MISSING REQUIRED FIELDS:
+   - Form validation prevents submission
+   - Submit button disabled until valid
+   - Inline error messages on fields
+   - Red border on invalid field
+
+2. INVALID DATES:
+   - If endDate < startDate, show error
+   - Date picker should constrain valid ranges
+   - Or validate on form submission and show error
+
+3. FILE I/O FAILURES (Phase 1):
+   - If JSON file fails to load, show error toast
+   - Use empty defaults and let user continue
+   - Error toast: "Failed to load data. Try refreshing the page."
+   - Auto-dismiss after 4 seconds
+
+4. ORPHANED DATA:
+   - If task is deleted, delete all its comments
+   - If task is deleted, delete all its pomodoro sessions
+   - Cascade delete ensures data integrity
+
+5. POMODORO TIMER EDGE CASES:
+   - If user closes timer mid-session, show confirmation:
+     "Abandon current session?" → Discard or Save Partial
+   - If duration is adjusted to 0, prevent (set min to 1)
+   - If user starts timer and closes browser, session is abandoned
+   - On re-open, orphaned session is marked as "Abandoned"
+
+6. DUPLICATE NAMES:
+   - Allow (not required to be unique)
+   - Could show warning: "Project with similar name exists"
+   - But don't block creation
+
+7. CONCURRENT SESSIONS:
+   - Only one Pomodoro session can run at a time
+   - If user clicks different task, ask: "Stop current timer?"
+   - Stop timer, save session, switch tasks
+
+ERROR NOTIFICATION UX:
+----------------------
+
+TOAST NOTIFICATIONS (transient errors):
+- Auto-appear top-right
+- 4-second auto-dismiss
+- Examples:
+  - "Task created successfully ✓"
+  - "Failed to save comment. Try again."
+  - "Project deleted"
+
+MODAL ALERTS (critical errors):
+- Require user acknowledgment
+- Central modal with message + OK button
+- Examples:
+  - "Cannot delete project with active tasks"
+  - "Failed to load projects. Please refresh."
+
+INLINE VALIDATION (form errors):
+- Show immediately as user types
+- Red text below field
+- Red border on field
+- Clear message: "Project name is required"
+
+================================================================================
+8. UTILITY FUNCTIONS & HELPERS
+================================================================================
+
+GENERATEID() - UNIQUE IDENTIFIER GENERATION:
+---------------------------------------------
+
+Location: src/utils/idGenerator.js
+
+Implementation:
+```javascript
+// src/utils/idGenerator.js
+
+/**
+ * Generate a unique identifier using crypto.randomUUID()
+ * Returns a v4 UUID string (36 characters including hyphens)
+ *
+ * @returns {string} UUID v4 identifier
+ */
+export function generateId() {
+  return crypto.randomUUID();
+}
+
+/**
+ * Generate multiple IDs at once
+ * @param {number} count - Number of IDs to generate
+ * @returns {string[]} Array of UUID identifiers
+ */
+export function generateIds(count) {
+  return Array.from({ length: count }, () => crypto.randomUUID());
+}
+```
+
+Usage Examples:
+```javascript
+// In entity factories
+import { generateId } from '../utils/idGenerator.js';
+
+export function createTask(data) {
+  return {
+    ...taskSchema,
+    ...data,
+    id: generateId(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+export function createComment(taskId, text) {
+  return {
+    id: generateId(),
+    taskId,
+    text,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+export function createPomodoroSession(taskId, sessionData) {
+  return {
+    ...pomodoroSessionSchema,
+    ...sessionData,
+    id: generateId(),
+    taskId,
+  };
+}
+```
+
+Advantages:
+- ✓ Built-in to JavaScript (crypto.randomUUID())
+- ✓ Generates v4 UUIDs (random, globally unique)
+- ✓ No external dependencies needed
+- ✓ Works in modern browsers and Node.js
+- ✓ Deterministic and collision-resistant
+- ✓ Easy to debug (human-readable format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+
+Browser Compatibility:
+- Chrome 92+
+- Firefox 76+
+- Safari 15.1+
+- Edge 92+
+- Modern development environments fully supported
+
+================================================================================
+9. TESTING STRATEGY (PHASE 1)
+================================================================================
+
+UNIT TESTS (Priority 1):
+------------------------
+
+Entity Factory Tests:
+- Project.js:
+  ✓ createProject() returns correct shape
+  ✓ createProject() generates unique ID
+  ✓ createProject() sets createdAt timestamp
+  ✓ createProject() validates required fields
+
+- Task.js:
+  ✓ createTask() includes all required fields
+  ✓ createTask() sets default status to "To Do"
+  ✓ createTask() references correct projectId
+
+- Comment.js, PomodoroSession.js: Similar tests
+
+Hook Tests:
+- useProjects():
+  ✓ getProjects() returns all projects
+  ✓ createProject() adds new project
+  ✓ updateProject() modifies existing project
+  ✓ deleteProject() removes project
+
+- useTasks():
+  ✓ getTasksByProject() filters correctly
+  ✓ getTasksByWeek() returns only current week
+  ✓ createTask() creates with correct defaults
+  ✓ addComment() appends to task comments
+
+- usePomodoroTimer():
+  ✓ startTimer() begins countdown
+  ✓ pauseTimer() stops countdown
+  ✓ resetTimer() reverts to initial duration
+  ✓ logSession() creates session record
+  ✓ increaseDuration() increments by 1 min
+  ✓ decreaseDuration() decrements by 1 min
+
+Utility Function Tests:
+- dateHelpers.js:
+  ✓ isThisWeek() identifies current week tasks
+  ✓ formatDate() returns correct format
+  ✓ getDayName() returns correct day name
+
+- statusHelpers.js:
+  ✓ getStatusColor() returns correct color code
+  ✓ isTaskDone() returns true only for "Done" status
+
+COMPONENT TESTS (Priority 2 - Optional):
+-----------------------------------------
+
+Key Components to Test:
+- Dashboard:
+  ✓ Renders projects and weekly tasks
+  ✓ Clicking task opens detail panel
+
+- TaskDetailPanel:
+  ✓ Renders task information
+  ✓ Pomodoro timer updates on button clicks
+  ✓ Comments appear when added
+  ✓ Status dropdown changes task status
+
+- PomodoroTimer:
+  ✓ Timer counts down (with mocked time)
+  ✓ Work/Rest toggle changes mode
+  ✓ +/- buttons adjust duration
+  ✓ Session log displays completed sessions
+
+MANUAL TESTING (Priority 1 - Essential):
+-----------------------------------------
+
+Core Workflows to Test:
+1. CREATE PROJECT:
+   ✓ Form opens with correct fields
+   ✓ Submit creates project
+   ✓ Project appears in dashboard
+
+2. CREATE TASK:
+   ✓ Form pre-selects project if opened from project
+   ✓ Task created with correct dates/status
+   ✓ Task appears in "ESTA SEMANA" if applicable
+
+3. POMODORO TIMER:
+   ✓ Work/Rest toggle switches modes
+   ✓ Duration adjusts with +/- buttons
+   ✓ Timer starts and counts down
+   ✓ Session logged when timer reaches 0
+   ✓ Session log shows correct classification (TRABAJO/DESCANSO)
+
+4. COMMENTS:
+   ✓ Comment input appears in detail panel
+   ✓ + Agregar button saves comment
+   ✓ Comment appears in thread with date/time
+   ✓ Multiple comments appear in order
+
+5. STATUS CHANGES:
+   ✓ Status badge shows current status
+   ✓ Clicking badge opens dropdown
+   ✓ Selecting new status updates task
+   ✓ Task view updates appropriately
+
+6. DATA PERSISTENCE:
+   ✓ Create project → refresh page → project still exists
+   ✓ Create task → refresh page → task still exists
+   ✓ Add comment → refresh page → comment still exists
+   ✓ Log pomodoro session → refresh page → session in history
+
+7. NAVIGATION:
+   ✓ Sidebar links navigate to different pages
+   ✓ + Nuevo button opens correct modal
+   ✓ Task panel opens/closes correctly
+   ✓ Closing panel returns focus to previous view
+
+TESTING TOOLS (Phase 1):
+------------------------
+- Unit Tests: Jest + React Testing Library
+- Manual Testing: Browser + Chrome DevTools
+- No E2E tests (keep scope focused)
+
+TEST COVERAGE TARGET:
+- Entities & Hooks: 80%+ coverage
+- Components: No specific target (manual testing sufficient)
+- Utils: 90%+ coverage
+
+================================================================================
+10. PHASE 1 COMPLETION CRITERIA
+================================================================================
+
+MUST HAVE (MVP):
+✓ Dashboard with projects overview + weekly tasks
+✓ Create/Edit/Delete projects
+✓ Create/Edit/Delete tasks
+✓ Task detail panel (side panel)
+✓ Pomodoro timer with Work/Rest modes
+✓ Pomodoro session logging (classified history)
+✓ Comments with date/time stamps
+✓ Task status management (5 statuses)
+✓ JSON file-based storage
+✓ Dark mode UI
+✓ Responsive layout
+
+NICE TO HAVE (Phase 1+):
+- Drag & drop for task organization
+- Bulk actions (mark multiple as done)
+- Search/filter advanced options
+- Data export/import
+- Custom Pomodoro durations per project
+- Task templates
+
+NOT IN SCOPE (Phase 2+):
+- Backend API
+- Multi-user/collaboration
+- Real-time sync
+- Mobile app
+- Advanced reporting
+- Calendar integration
+
+================================================================================
+END OF DESIGN SPECIFICATION
+================================================================================
+
+APPROVAL STATUS:
+- Layout & Visual Design: ✓ APPROVED
+- Task Detail Panel: ✓ APPROVED
+- Project Structure: ✓ APPROVED
+- Data Model (Normalized): ✓ UPDATED - Comments & Pomodoro Sessions as separate entities
+- Utility Functions (generateId): ✓ UPDATED - Uses crypto.randomUUID()
+- State Management & Hooks: ✓ UPDATED - Separate hooks for comments, sessions, tasks
+- User Workflows: ✓ APPROVED
+- Error Handling: ✓ APPROVED
+- Testing Strategy: ✓ APPROVED
+
+KEY UPDATES MADE:
+✓ Task entity no longer contains comments or pomodoroSessions arrays
+✓ Comments and PomodoroSessions stored in separate JSON files
+✓ Entities linked via taskId and projectId foreign keys
+✓ generateId() utility added using crypto.randomUUID()
+✓ Separate hooks added: useComments(), usePomodoroSessions()
+✓ Cascading deletes handled at hook level
+✓ Normalized data structure supports better scalability and Phase 2 migration
+
+Next Step: Final review and approval, then write formal design document and commit to git.

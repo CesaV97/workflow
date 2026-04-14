@@ -1,0 +1,192 @@
+Proyecto: Aplicación de control de flujo de trabajo y tiempos
+Fase 1 – Definición de la idea
+- Objetivo general -
+
+La aplicación tendrá como objetivo ayudarme a llevar el control de los proyectos en los que estoy trabajando, así como de las tareas y actividades relacionadas con cada uno.
+
+Debe permitirme visualizar con claridad:
+
+* los proyectos activos
+* las tareas o actividades de cada proyecto
+* las fechas de inicio y final
+* el estatus de avance de cada tarea
+* el estatus general del proyecto
+* los comentarios o notas por tarea o actividad
+* el tiempo de enfoque dedicado a cada actividad mediante un reloj tipo Pomodoro
+
+- Propósito principal de la aplicación -
+
+Quiero una aplicación personal, simple y extensible, enfocada en productividad y control de trabajo.
+
+La idea no es crear una herramienta tan pesada como MS Project, sino una solución más ligera, visual y práctica, que me permita:
+
+* organizar proyectos
+* dar seguimiento a tareas
+* controlar tiempos
+* mantener enfoque durante la ejecución
+*registrar el esfuerzo dedicado a cada actividad
+*Funcionalidades principales de la Fase 1
+
+1. Gestión de proyectos
+
+La aplicación debe permitir crear y administrar proyectos.
+
+Cada proyecto debe poder incluir al menos:
+
+* nombre del proyecto
+* descripción
+* fecha de inicio
+* fecha final
+* estatus general
+*lista de tareas o actividades relacionadas
+
+2. Gestión de tareas / actividades
+
+Cada proyecto podrá contener varias tareas o actividades.
+
+Cada tarea o actividad debe poder incluir:
+
+* nombre
+* descripción
+* fecha de inicio
+* fecha final
+* estatus
+* comentarios
+* relación con un proyecto
+
+3. Seguimiento de estatus
+
+La aplicación debe permitir revisar:
+
+* el estatus individual de cada tarea o actividad
+* el estatus general del proyecto
+*el progreso general de trabajo
+
+4. Comentarios por tarea / actividad
+
+Cada tarea o actividad debe permitir agregar comentarios o notas, para registrar avances, bloqueos, ideas o pendientes.
+
+5. Reloj tipo Pomodoro por tarea / actividad
+
+Cada tarea o actividad debe tener la opción de usar un reloj tipo Pomodoro para ayudar a mantener el enfoque mientras se trabaja en ella.
+
+Reglas principales del Pomodoro:
+
+el Pomodoro se ejecuta dentro de la tarea o actividad seleccionada
+la actividad no se cierra automáticamente al terminar el Pomodoro
+la actividad se cierra manualmente cuando realmente haya sido concluida
+cada vez que se utilice el Pomodoro, debe registrarse el uso
+debe existir un conteo de cuántas veces se utilizó el Pomodoro en cada tarea o actividad
+ese registro servirá como referencia del tiempo y esfuerzo dedicado a la actividad
+Flujo de trabajo esperado
+Flujo básico de uso
+Crear un proyecto nuevo
+Crear tareas o actividades asociadas al proyecto
+Definir fecha de inicio y fecha final para el proyecto y sus tareas
+Revisar el estatus de cada tarea o actividad
+Revisar el estatus general del proyecto
+Usar el reloj tipo Pomodoro en una tarea o actividad cuando se esté trabajando en ella
+Registrar automáticamente cada uso del Pomodoro dentro de la actividad
+Cerrar manualmente la tarea o actividad cuando esté terminada
+
+- Tipo de layout - 
+
+La aplicación debe tener una estructura visual tipo SaaS dashboard.
+
+Estructura principal del layout
+Sidebar izquierda
+
+Debe contener la navegación principal con estas secciones:
+
+Dashboard
+Proyectos
+Tareas
+Reportes
+Configuración
+Top bar
+
+Debe incluir:
+
+buscador
+botón “Nuevo” para crear una tarea, actividad o proyecto
+filtros rápidos
+perfil
+Área central
+
+Debe mostrar contenido dinámico según el módulo seleccionado.
+
+Panel derecho opcional
+
+Puede utilizarse para mostrar:
+
+actividad reciente
+recordatorios
+Estilo visual deseado
+
+La aplicación debe tener una interfaz moderna, limpia y enfocada en productividad.
+
+Estilo visual
+minimalista
+inspiración tipo Apple
+dark mode
+tonos morados similares a estilos visuales como GitHub o Supabase en modo oscuro
+colores naturales y agradables
+tipografía limpia y fácil de leer
+diseño ordenado, elegante y sin exceso de elementos visuales
+
+- Tecnologías a considerar en la Fase 1 -
+
+Frontend: 
+* React
+* Vite
+* java Script
+
+UI:
+* CSS
+
+- Alcance de la Fase 1 -
+
+La Fase 1 debe enfocarse en definir claramente la idea del producto, su estructura base, su flujo principal y la experiencia visual esperada.
+
+En esta fase no se busca construir una aplicación compleja desde el inicio, sino dejar bien definido:
+
+qué hará la aplicación
+cómo se organizará la información
+cómo será el flujo principal de uso
+cómo deberá verse la interfaz
+qué módulos base tendrá
+
+- Resumen funcional -
+
+La aplicación será un sistema personal de productividad para controlar proyectos, tareas y tiempos de trabajo.
+
+El enfoque principal será:
+
+control de proyectos
+control de tareas y actividades
+seguimiento por fechas
+visualización de estatus
+comentarios por actividad
+uso de Pomodoro por tarea
+registro de sesiones Pomodoro por actividad
+interfaz tipo SaaS dashboard en dark mode, con estilo minimalista y moderno
+
+- Manejo de datos en Fase 1 -
+
+Para el manejo de información, se entiende que en una implementación completa se requerirá una base de datos.
+
+Sin embargo, para la Fase 1 se utilizarán archivos JSON dentro de la aplicación para almacenar la información necesaria.
+
+Esto permitirá:
+
+simplificar el desarrollo inicial
+evitar la implementación temprana de un backend
+concentrarse primero en la interfaz, flujo de trabajo y funcionalidad del frontend
+
+En fases posteriores se podrá reemplazar este almacenamiento temporal por una base de datos real mediante un backend, lo cual será considerado en la Fase 2 del proyecto.
+
+
+
+
+
+

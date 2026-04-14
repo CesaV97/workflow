@@ -1,0 +1,90 @@
+src/
+features/
+  Dashboard/
+    Dashboard.jsx
+    ProjectGrid.jsx
+    WeeklyTasksList.jsx
+    Dashboard.css
+
+  Projects/
+    Projects.jsx
+    ProjectCard.jsx
+    ProjectList.jsx
+    ProjectDetail.jsx
+    ProjectForm.jsx
+    Projects.css
+
+  Tasks/
+    Tasks.jsx
+    TaskListItem.jsx
+    TaskList.jsx
+    TaskFilter.jsx
+    TaskForm.jsx
+    Tasks.css
+
+  TaskDetail/
+    TaskDetailPanel.jsx
+    TaskInfo.jsx
+    TaskDetail.css
+
+  Pomodoro/
+    PomodoroTimer.jsx
+    WorkRestToggle.jsx
+    TimerDisplay.jsx
+    TimerControls.jsx
+    SessionLog.jsx
+    Pomodoro.css
+
+  Comments/
+    CommentThread.jsx
+    CommentList.jsx
+    CommentItem.jsx
+    CommentInput.jsx
+    Comments.css
+
+  Reports/
+    Reports.jsx
+    Reports.css
+
+  Settings/
+    Settings.jsx
+    Settings.css
+
+components/
+  Layout/
+    Sidebar.jsx
+    TopBar.jsx
+    MainContent.jsx
+    Layout.css
+
+  Common/
+    Button.jsx
+    Modal.jsx
+    Badge.jsx
+    SearchBar.jsx
+    Common.css
+
+hooks/
+  useProjects.js
+  useTasks.js
+  usePomodoroTimer.js
+  useLocalStorage.js
+
+data/
+  projects.json
+  tasks.json
+  pomodoro-sessions.json
+
+styles/
+  global.css
+  theme.css
+
+utils/
+  dateHelpers.js
+  storageManager.js
+  statusHelpers.js
+
+constants/
+  taskStatus.js
+  projectStatus.js
+  pomodoroConfig.js

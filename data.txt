@@ -1,0 +1,13 @@
+src/
+  data/
+    entities/
+      Project.js
+      Task.js
+      Comment.js
+      PomodoroSession.js
+
+    storage/
+      projects.json
+      tasks.json
+      comments.json
+      pomodoroSessions.json

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { createPomodoroSession, pomodoroSessionSchema } from '../../src/data/entities/PomodoroSession';
+import { createPomodoroSession, pomodoroSessionSchema, isValidPomodoroSession } from '../../src/data/entities/PomodoroSession';
 import { POMODORO_TYPES, POMODORO_STATUS } from '../../src/constants/pomodoroConfig';
 
 describe('PomodoroSession entity', () => {
@@ -67,5 +67,65 @@ describe('PomodoroSession entity', () => {
     });
 
     expect(session1.id).not.toBe(session2.id);
+  });
+
+  it('should validate session type (Work or Rest only)', () => {
+    const now = new Date();
+    const validWorkSession = {
+      id: 'uuid',
+      taskId: 'task-123',
+      type: 'Work',
+      duration: 25,
+      startTime: now.toISOString(),
+      endTime: new Date(now.getTime() + 25 * 60000).toISOString(),
+    };
+
+    const invalidSession = {
+      ...validWorkSession,
+      type: 'Break', // Invalid type
+    };
+
+    expect(isValidPomodoroSession(validWorkSession)).toBe(true);
+    expect(isValidPomodoroSession(invalidSession)).toBe(false);
+  });
+
+  it('should validate duration is between 1 and 60 minutes', () => {
+    const now = new Date();
+    const validSession = {
+      id: 'uuid',
+      taskId: 'task-123',
+      type: 'Work',
+      duration: 25,
+      startTime: now.toISOString(),
+      endTime: new Date(now.getTime() + 25 * 60000).toISOString(),
+    };
+
+    const tooShort = { ...validSession, duration: 0 };
+    const tooLong = { ...validSession, duration: 61 };
+
+    expect(isValidPomodoroSession(validSession)).toBe(true);
+    expect(isValidPomodoroSession(tooShort)).toBe(false);
+    expect(isValidPomodoroSession(tooLong)).toBe(false);
+  });
+
+  it('should validate endTime is after startTime', () => {
+    const now = new Date();
+    const validSession = {
+      id: 'uuid',
+      taskId: 'task-123',
+      type: 'Work',
+      duration: 25,
+      startTime: now.toISOString(),
+      endTime: new Date(now.getTime() + 25 * 60000).toISOString(),
+    };
+
+    const invalidSession = {
+      ...validSession,
+      startTime: now.toISOString(),
+      endTime: new Date(now.getTime() - 5000).toISOString(), // Earlier than start
+    };
+
+    expect(isValidPomodoroSession(validSession)).toBe(true);
+    expect(isValidPomodoroSession(invalidSession)).toBe(false);
   });
 });

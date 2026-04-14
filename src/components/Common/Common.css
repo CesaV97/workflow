@@ -122,3 +122,33 @@
   padding: var(--space-4);
   overflow-y: auto;
 }
+
+/* Badge Styles */
+.badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.badge-info {
+  background-color: rgba(88, 166, 255, 0.2);
+  color: #58a6ff;
+}
+
+.badge-warning {
+  background-color: rgba(217, 119, 6, 0.2);
+  color: #d97706;
+}
+
+.badge-success {
+  background-color: rgba(3, 136, 61, 0.2);
+  color: #238636;
+}
+
+.badge-danger {
+  background-color: rgba(218, 54, 51, 0.2);
+  color: #da3633;
+}

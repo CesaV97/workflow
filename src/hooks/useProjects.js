@@ -100,7 +100,9 @@ export function useProjects() {
   const projectCount = () => projects.length;
 
   return {
-    projects: getAllProjects(),
+    get projects() {
+      return getAllProjects();
+    },
     addProject,
     getProjectById,
     updateProject,

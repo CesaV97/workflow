@@ -110,4 +110,14 @@ describe('useProjects hook', () => {
     addProject({ name: 'Project 2' });
     expect(projectCount()).toBe(2);
   });
+
+  it('should return fresh projects array on each access', () => {
+    const hook = useProjects();
+    const count1 = hook.projects.length;
+    hook.addProject({ name: 'Project 1' });
+    const count2 = hook.projects.length;
+
+    expect(count1).toBe(0);
+    expect(count2).toBe(1);  // Getter returned fresh data
+  });
 });

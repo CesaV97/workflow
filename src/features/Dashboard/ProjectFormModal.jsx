@@ -1,21 +1,22 @@
 import { useState, useEffect } from 'react';
 import { Modal } from '../../components/Common/Modal';
-import { PROJECT_STATUS } from '../../constants/projectStatus';
+import { PROJECT_STATUS, PROJECT_DEFAULTS } from '../../constants/projectStatus';
+
+// Empty form constant - used as initial state and stale reference prevention in useEffect
+const EMPTY_FORM = { name: '', description: '', startDate: '', endDate: '', status: PROJECT_DEFAULTS.status };
 
 export function ProjectFormModal({ isOpen, onClose, onSave, project }) {
   const isEditing = Boolean(project);
 
-  const emptyForm = { name: '', description: '', startDate: '', endDate: '', status: 'Active' };
-
-  const [formData, setFormData] = useState(emptyForm);
+  const [formData, setFormData] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (isOpen) {
       setFormData(
         project
-          ? { name: project.name || '', description: project.description || '', startDate: project.startDate || '', endDate: project.endDate || '', status: project.status || 'Active' }
-          : emptyForm
+          ? { name: project.name || '', description: project.description || '', startDate: project.startDate || '', endDate: project.endDate || '', status: project.status || PROJECT_DEFAULTS.status }
+          : EMPTY_FORM
       );
       setErrors({});
     }
@@ -26,6 +27,7 @@ export function ProjectFormModal({ isOpen, onClose, onSave, project }) {
     if (!formData.name.trim()) {
       newErrors.name = 'El nombre es requerido';
     }
+    // ISO strings (YYYY-MM-DD) are lexicographically ordered — string comparison is intentional
     if (formData.startDate && formData.endDate && formData.endDate < formData.startDate) {
       newErrors.endDate = 'La fecha de fin debe ser posterior al inicio';
     }

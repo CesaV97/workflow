@@ -3,7 +3,21 @@
     "allow": [
       "Bash(npm init:*)",
       "Bash(npm install:*)",
-      "Bash(timeout 5 npm run dev)"
+      "Bash(timeout 5 npm run dev)",
+      "Bash(npm test:*)",
+      "Bash(node -e ':*)",
+      "Bash(xargs cat:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(node /tmp/test_destructure_issue.js)",
+      "Bash(npm run:*)",
+      "Bash(node /tmp/comprehensive_review.js)",
+      "Read(//tmp/**)",
+      "Bash(cp /c/dev/workFlow/src/data/entities/*.js /c/dev/workFlow/dev/src/data/entities/)",
+      "Bash(cp /c/dev/workFlow/src/utils/*.js /c/dev/workFlow/dev/src/utils/)",
+      "Bash(cp /c/dev/workFlow/src/constants/*.js /c/dev/workFlow/dev/src/constants/)"
     ]
   }
 }

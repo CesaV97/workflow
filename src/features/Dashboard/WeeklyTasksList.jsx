@@ -14,7 +14,7 @@ export function WeeklyTasksList({ tasks = [] }) {
         <div key={task.id} className="task-item">
           <div className="task-header">
             <h4 className="task-name">{task.name}</h4>
-            <span className={`task-status status-${task.status.toLowerCase().replace(' ', '-')}`}>
+            <span className={`task-status status-${(task.status ?? '').toLowerCase().replaceAll(' ', '-')}`}>
               {task.status}
             </span>
           </div>

@@ -17,6 +17,7 @@ export function Dashboard() {
 
   const handleUpdateProject = (id, data) => {
     const updated = projectsHook.updateProject(id, data);
+    if (!updated) return;
     setProjects((prev) => prev.map((p) => (p.id === id ? updated : p)));
   };
 

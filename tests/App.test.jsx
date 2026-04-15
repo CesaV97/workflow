@@ -8,6 +8,8 @@ vi.mock('../src/hooks/useProjects', () => ({
     projects: [],
     projectCount: () => 0,
     addProject: vi.fn(),
+    updateProject: vi.fn(),
+    deleteProject: vi.fn(),
   }),
 }));
 

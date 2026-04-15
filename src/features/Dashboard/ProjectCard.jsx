@@ -1,5 +1,13 @@
 import { useState } from 'react';
 
+/**
+ * ProjectCard (Dashboard) - Displays a project card with edit and inline delete actions.
+ * Note: for the read-only variant used in the Projects feature, see src/features/Projects/ProjectCard.jsx
+ *
+ * @param {object} project - Project data ({ id, name, status, description, createdAt })
+ * @param {function} onEdit - Called with the full project object when Edit is clicked
+ * @param {function} onDelete - Called with project.id when deletion is confirmed
+ */
 export function ProjectCard({ project, onEdit, onDelete }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -18,11 +26,11 @@ export function ProjectCard({ project, onEdit, onDelete }) {
       <div className="project-actions">
         <button onClick={() => onEdit(project)}>Editar</button>
         {confirmDelete ? (
-          <span className="delete-confirm">
+          <div className="delete-confirm">
             <span>¿Eliminar este proyecto?</span>
-            <button onClick={() => onDelete(project.id)}>Confirmar</button>
+            <button aria-label={`Confirmar eliminación de ${project.name}`} onClick={() => onDelete(project.id)}>Confirmar</button>
             <button onClick={() => setConfirmDelete(false)}>Cancelar</button>
-          </span>
+          </div>
         ) : (
           <button onClick={() => setConfirmDelete(true)}>Eliminar</button>
         )}

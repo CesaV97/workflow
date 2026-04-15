@@ -57,8 +57,8 @@ describe('App component', () => {
 
   it('should render main content area', () => {
     render(<App />);
-    const main = screen.getByRole('main');
-    expect(main).toBeInTheDocument();
+    const mainContent = document.querySelector('.main-content');
+    expect(mainContent).toBeInTheDocument();
   });
 
   it('should display app title in topbar', () => {

@@ -36,12 +36,18 @@
 
 .nav-link {
   display: block;
+  width: 100%;
   padding: var(--space-3) var(--space-2);
   color: var(--color-text-secondary);
   text-decoration: none;
   border-radius: var(--radius-md);
   transition: all var(--transition-fast, 0.2s ease);
   font-size: var(--font-size-base);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
 }
 
 .nav-link:hover {

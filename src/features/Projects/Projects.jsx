@@ -20,7 +20,7 @@ export function Projects() {
   };
 
   return (
-    <main className="projects">
+    <div className="projects">
       <div className="projects-header">
         <h1 className="projects-title">Projects</h1>
         <Button variant="primary" onClick={() => setShowForm(true)}>
@@ -43,6 +43,6 @@ export function Projects() {
       <Modal isOpen={showForm} onClose={() => setShowForm(false)} title="New Project">
         <ProjectForm onSubmit={handleAddProject} onCancel={() => setShowForm(false)} />
       </Modal>
-    </main>
+    </div>
   );
 }

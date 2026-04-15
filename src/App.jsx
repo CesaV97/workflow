@@ -14,6 +14,10 @@ import './App.css';
 export function App() {
   const [currentView, setCurrentView] = useState('dashboard');
 
+  const handleNavClick = (view) => {
+    setCurrentView(view);
+  };
+
   const renderContent = () => {
     switch (currentView) {
       case 'dashboard':
@@ -42,7 +46,7 @@ export function App() {
 
   return (
     <div className="app">
-      <Sidebar />
+      <Sidebar onNavigate={handleNavClick} currentView={currentView} />
       <div className="app-main">
         <TopBar title={getTopBarTitle()} />
         <MainContent>

@@ -4,7 +4,13 @@ import './Sidebar.css';
  * Sidebar component - Main navigation for the application
  * Provides links to different app sections (Dashboard, Projects, Tasks, etc.)
  */
-export function Sidebar() {
+export function Sidebar({ onNavigate, currentView }) {
+  const navItems = [
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'projects', label: 'Projects' },
+    { id: 'tasks', label: 'Tasks' },
+  ];
+
   return (
     <nav className="sidebar">
       <div className="sidebar-header">
@@ -12,18 +18,16 @@ export function Sidebar() {
       </div>
 
       <ul className="sidebar-nav">
-        <li>
-          <a href="#dashboard" className="nav-link">Dashboard</a>
-        </li>
-        <li>
-          <a href="#projects" className="nav-link">Projects</a>
-        </li>
-        <li>
-          <a href="#tasks" className="nav-link">Tasks</a>
-        </li>
-        <li>
-          <a href="#pomodoro" className="nav-link">Pomodoro</a>
-        </li>
+        {navItems.map((item) => (
+          <li key={item.id}>
+            <button
+              className={`nav-link ${currentView === item.id ? 'active' : ''}`}
+              onClick={() => onNavigate(item.id)}
+            >
+              {item.label}
+            </button>
+          </li>
+        ))}
       </ul>
 
       <div className="sidebar-footer">

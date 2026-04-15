@@ -24,8 +24,8 @@ vi.mock('../../src/hooks/useProjects', () => ({
 describe('Projects feature', () => {
   it('should render projects container', () => {
     render(<Projects />);
-    const main = screen.getByRole('main');
-    expect(main).toBeInTheDocument();
+    const container = document.querySelector('.projects');
+    expect(container).toBeInTheDocument();
   });
 
   it('should display projects title', () => {

@@ -20,7 +20,7 @@
   font-size: 3rem;
   font-weight: var(--font-weight-bold);
   color: var(--color-accent);
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-mono, monospace);
   letter-spacing: 0.1em;
 }
 
@@ -60,4 +60,18 @@
   border-radius: var(--radius-md);
   color: var(--color-text-primary);
   font-size: var(--font-size-base);
+  font-family: inherit;
+}
+
+.timer-settings input:focus,
+.timer-settings select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.1);
+}
+
+.timer-settings input:disabled,
+.timer-settings select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

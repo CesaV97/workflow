@@ -63,6 +63,7 @@ describe('App component', () => {
 
   it('should display app title in topbar', () => {
     render(<App />);
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    const topbarTitle = screen.getByRole('heading', { level: 2, name: /dashboard/i });
+    expect(topbarTitle).toBeInTheDocument();
   });
 });

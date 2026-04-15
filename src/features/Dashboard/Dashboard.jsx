@@ -7,7 +7,7 @@ export function Dashboard() {
   const { tasks, taskCount } = useTasks();
 
   return (
-    <main className="dashboard">
+    <div className="dashboard">
       <div className="dashboard-header">
         <h1 className="dashboard-title">Dashboard</h1>
         <div className="dashboard-stats">
@@ -54,6 +54,6 @@ export function Dashboard() {
           )}
         </section>
       </div>
-    </main>
+    </div>
   );
 }

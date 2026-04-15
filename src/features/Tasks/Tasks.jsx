@@ -5,7 +5,7 @@ export function Tasks() {
   const { tasks, taskCount } = useTasks();
 
   return (
-    <main className="tasks">
+    <div className="tasks">
       <h1 className="tasks-title">Tasks</h1>
       <p className="tasks-count">{taskCount()} tasks</p>
       {tasks.length === 0 ? (
@@ -23,6 +23,6 @@ export function Tasks() {
           ))}
         </div>
       )}
-    </main>
+    </div>
   );
 }

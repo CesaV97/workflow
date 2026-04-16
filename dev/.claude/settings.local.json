@@ -17,7 +17,11 @@
       "Read(//tmp/**)",
       "Bash(cp /c/dev/workFlow/src/data/entities/*.js /c/dev/workFlow/dev/src/data/entities/)",
       "Bash(cp /c/dev/workFlow/src/utils/*.js /c/dev/workFlow/dev/src/utils/)",
-      "Bash(cp /c/dev/workFlow/src/constants/*.js /c/dev/workFlow/dev/src/constants/)"
+      "Bash(cp /c/dev/workFlow/src/constants/*.js /c/dev/workFlow/dev/src/constants/)",
+      "Bash(npx vitest *)",
+      "Bash(cat vitest.config.js)",
+      "Bash(cat vitest.config.ts)",
+      "Bash(cat vite.config.js)"
     ]
   }
 }

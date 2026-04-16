@@ -1,21 +1,24 @@
 import './TopBar.css';
 
 /**
- * TopBar component - Header bar for the main content area
- * Displays the current section title and user action buttons
+ * TopBar component - Top navigation bar with search and actions.
  *
- * @param {string} title - Title to display (e.g., "Dashboard", "Projects")
- * @param {React.ReactNode} actions - Optional action buttons/controls
+ * @param {string} title - Current page title (unused visually, kept for context)
  */
-export function TopBar({ title, actions = null }) {
+export function TopBar({ title }) {
   return (
     <header className="topbar">
-      <div className="topbar-left">
-        <h2 className="topbar-title">{title}</h2>
+      <div className="topbar-search">
+        <input
+          className="search-input"
+          type="search"
+          placeholder="Buscar proyectos o tareas..."
+          aria-label="Buscar proyectos o tareas"
+        />
       </div>
-
-      <div className="topbar-actions" role="region" aria-label="topbar actions">
-        {actions}
+      <div className="topbar-actions">
+        <button className="btn-nuevo" aria-label="Nuevo">+ Nuevo</button>
+        <button className="topbar-profile" aria-label="Perfil">⚙️ Perfil</button>
       </div>
     </header>
   );

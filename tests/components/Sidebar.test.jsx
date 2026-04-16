@@ -1,43 +1,44 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Sidebar } from '../../src/features/Layout/Sidebar';
 
 describe('Sidebar component', () => {
   it('should render sidebar container', () => {
-    render(<Sidebar />);
-    const sidebar = screen.getByRole('navigation');
-    expect(sidebar).toBeInTheDocument();
+    render(<Sidebar onNavigate={vi.fn()} currentView="dashboard" />);
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
   });
 
-  it('should display app title', () => {
-    render(<Sidebar />);
-    expect(screen.getByText('WorkFlow')).toBeInTheDocument();
+  it('should display app title with logo', () => {
+    render(<Sidebar onNavigate={vi.fn()} currentView="dashboard" />);
+    expect(screen.getByText('⚡ WorkFlow')).toBeInTheDocument();
   });
 
-  it('should have navigation links', () => {
-    render(<Sidebar />);
+  it('should have all 5 navigation items', () => {
+    render(<Sidebar onNavigate={vi.fn()} currentView="dashboard" />);
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Projects')).toBeInTheDocument();
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByText('Proyectos')).toBeInTheDocument();
+    expect(screen.getByText('Tareas')).toBeInTheDocument();
+    expect(screen.getByText('Reportes')).toBeInTheDocument();
+    expect(screen.getByText('Configuración')).toBeInTheDocument();
   });
 
-  it('should apply correct CSS class', () => {
-    render(<Sidebar />);
-    const sidebar = screen.getByRole('navigation');
-    expect(sidebar).toHaveClass('sidebar');
+  it('should apply active class to current view', () => {
+    render(<Sidebar onNavigate={vi.fn()} currentView="projects" />);
+    const activeItem = screen.getByText('Proyectos').closest('button');
+    expect(activeItem).toHaveClass('active');
   });
 
-  it('should have correct semantic structure', () => {
-    const { container } = render(<Sidebar />);
-    const navElement = container.querySelector('nav.sidebar');
-    expect(navElement).toBeInTheDocument();
-    const list = navElement.querySelector('ul');
-    expect(list).toBeInTheDocument();
+  it('should call onNavigate with correct id when item clicked', async () => {
+    const onNavigate = vi.fn();
+    render(<Sidebar onNavigate={onNavigate} currentView="dashboard" />);
+    await userEvent.click(screen.getByText('Proyectos'));
+    expect(onNavigate).toHaveBeenCalledWith('projects');
   });
 
-  it('should render list items for each navigation link', () => {
-    const { container } = render(<Sidebar />);
+  it('should render at least 5 nav list items', () => {
+    const { container } = render(<Sidebar onNavigate={vi.fn()} currentView="dashboard" />);
     const listItems = container.querySelectorAll('.sidebar ul li');
-    expect(listItems.length).toBeGreaterThanOrEqual(3); // At least 3 items
+    expect(listItems.length).toBeGreaterThanOrEqual(5);
   });
 });

@@ -2,19 +2,24 @@ import './Sidebar.css';
 
 /**
  * Sidebar component - Main navigation for the application
- * Provides links to different app sections (Dashboard, Projects, Tasks, etc.)
+ * Fixed left sidebar with logo and navigation to all app sections.
+ *
+ * @param {function} onNavigate - Called with the view id when a nav item is clicked
+ * @param {string} currentView - The currently active view id
  */
 export function Sidebar({ onNavigate, currentView }) {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard' },
-    { id: 'projects', label: 'Projects' },
-    { id: 'tasks', label: 'Tasks' },
+    { id: 'projects', label: 'Proyectos' },
+    { id: 'tasks', label: 'Tareas' },
+    { id: 'reports', label: 'Reportes' },
+    { id: 'settings', label: 'Configuración' },
   ];
 
   return (
     <nav className="sidebar">
       <div className="sidebar-header">
-        <h1 className="sidebar-title">WorkFlow</h1>
+        <div className="sidebar-logo">⚡ WorkFlow</div>
       </div>
 
       <ul className="sidebar-nav">
@@ -29,10 +34,6 @@ export function Sidebar({ onNavigate, currentView }) {
           </li>
         ))}
       </ul>
-
-      <div className="sidebar-footer">
-        <p className="sidebar-version">v1.0</p>
-      </div>
     </nav>
   );
 }

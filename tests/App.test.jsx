@@ -63,9 +63,9 @@ describe('App component', () => {
     expect(mainContent).toBeInTheDocument();
   });
 
-  it('should display app title in topbar', () => {
+  it('should display search input in topbar', () => {
     render(<App />);
-    const topbarTitle = screen.getByRole('heading', { level: 2, name: /dashboard/i });
-    expect(topbarTitle).toBeInTheDocument();
+    const searchInput = screen.getByRole('searchbox');
+    expect(searchInput).toBeInTheDocument();
   });
 });

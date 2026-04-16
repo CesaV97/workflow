@@ -12,6 +12,6 @@ vi.mock('../../src/hooks/useTasks', () => ({
 describe('Tasks', () => {
   it('should render tasks', () => {
     render(<Tasks />);
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.getByText('Tareas')).toBeInTheDocument();
   });
 });

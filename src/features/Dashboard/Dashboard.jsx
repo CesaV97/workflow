@@ -5,7 +5,7 @@ import { ProjectGrid } from './ProjectGrid';
 import { WeeklyTasksList } from './WeeklyTasksList';
 import './Dashboard.css';
 
-export function Dashboard() {
+export function Dashboard({ onTaskSelect }) {
   const projectsHook = useProjects();
   const { tasks, taskCount } = useTasks();
   const [projects, setProjects] = useState(projectsHook.projects);
@@ -44,7 +44,7 @@ export function Dashboard() {
 
       <div className="dashboard-grid">
         <section className="dashboard-section">
-          <h2 className="section-title">Projects</h2>
+          <h2 className="section-title">Proyectos Activos</h2>
           <ProjectGrid
             projects={projects}
             onAdd={handleAddProject}
@@ -54,8 +54,8 @@ export function Dashboard() {
         </section>
 
         <section className="dashboard-section">
-          <h2 className="section-title">Tasks</h2>
-          <WeeklyTasksList tasks={tasks} />
+          <h2 className="section-title">Esta Semana</h2>
+          <WeeklyTasksList tasks={tasks} onTaskClick={onTaskSelect} />
         </section>
       </div>
     </main>

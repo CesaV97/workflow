@@ -2,31 +2,16 @@ import { useState } from 'react';
 import { Button } from '../../components/Common/Button';
 import './ProjectForm.css';
 
-/**
- * ProjectForm component - Form for creating/editing projects
- *
- * @param {function} onSubmit - Callback with form data
- * @param {function} onCancel - Callback to cancel form
- */
-export function ProjectForm({ onSubmit, onCancel }) {
+export function ProjectForm({ onSubmit, onCancel, submitting = false }) {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
     if (formData.name.trim()) {
       onSubmit(formData);
-      setFormData({ name: '', description: '' });
     }
   };
 
@@ -40,7 +25,7 @@ export function ProjectForm({ onSubmit, onCancel }) {
           name="name"
           className="form-input"
           value={formData.name}
-          onChange={handleChange}
+          onChange={(event) => setFormData((prev) => ({ ...prev, name: event.target.value }))}
           placeholder="Enter project name"
           required
         />
@@ -53,18 +38,18 @@ export function ProjectForm({ onSubmit, onCancel }) {
           name="description"
           className="form-input"
           value={formData.description}
-          onChange={handleChange}
+          onChange={(event) => setFormData((prev) => ({ ...prev, description: event.target.value }))}
           placeholder="Enter project description"
           rows="3"
         />
       </div>
 
       <div className="form-actions">
-        <Button variant="secondary" onClick={onCancel} type="button">
+        <Button variant="secondary" onClick={onCancel} type="button" disabled={submitting}>
           Cancel
         </Button>
-        <Button variant="primary" type="submit">
-          Create Project
+        <Button variant="primary" type="submit" disabled={submitting}>
+          {submitting ? 'Saving...' : 'Create Project'}
         </Button>
       </div>
     </form>

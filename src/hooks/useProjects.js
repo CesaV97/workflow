@@ -1,112 +1,81 @@
-import { useLocalStorage } from './useLocalStorage';
-import { createProject } from '../data/entities/Project';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { createProject as createProjectEntity } from '../data/entities/Project';
+import {
+  createProject,
+  deleteProject,
+  listProjects,
+  updateProject,
+} from '../lib/workflowApi';
 
-/**
- * Custom hook for managing projects with localStorage persistence
- * Provides CRUD operations for projects
- *
- * @returns {object} Project management interface:
- *   - projects: Array of all projects
- *   - addProject(data): Create and add new project
- *   - getProjectById(id): Retrieve project by ID
- *   - updateProject(id, updates): Update project properties
- *   - deleteProject(id): Remove project by ID
- *   - projectCount(): Get total number of projects
- */
 export function useProjects() {
-  const storage = useLocalStorage('projects');
+  const { user, isConfigured } = useAuth();
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Load projects from localStorage, default to empty array
-  let projects = storage.getItem() || [];
-
-  /**
-   * Save projects to localStorage
-   */
-  const saveProjects = () => {
-    storage.setItem(projects);
-  };
-
-  /**
-   * Add a new project
-   * @param {object} data - Project data (name, description, etc.)
-   * @returns {object} Created project with ID and timestamps
-   */
-  const addProject = (data) => {
-    const newProject = createProject(data);
-    projects.push(newProject);
-    saveProjects();
-    return newProject;
-  };
-
-  /**
-   * Get all projects
-   * @returns {array} All projects
-   */
-  const getAllProjects = () => projects;
-
-  /**
-   * Get project by ID
-   * @param {string} id - Project ID
-   * @returns {object|undefined} Project or undefined if not found
-   */
-  const getProjectById = (id) => {
-    return projects.find(p => p.id === id);
-  };
-
-  /**
-   * Update a project
-   * @param {string} id - Project ID
-   * @param {object} updates - Fields to update
-   * @returns {object|undefined} Updated project or undefined if not found
-   */
-  const updateProject = (id, updates) => {
-    const project = getProjectById(id);
-    if (!project) {
-      return undefined;
+  const loadProjects = useCallback(async () => {
+    if (!user || !isConfigured) {
+      setProjects([]);
+      return;
     }
 
-    const updated = {
-      ...project,
-      ...updates,
-      updatedAt: new Date().toISOString(),
-    };
+    setLoading(true);
+    setError('');
+    try {
+      const nextProjects = await listProjects(user.id);
+      setProjects(nextProjects);
+    } catch (loadError) {
+      setError(loadError.message ?? 'No se pudieron cargar los proyectos.');
+    } finally {
+      setLoading(false);
+    }
+  }, [isConfigured, user]);
 
-    const index = projects.findIndex(p => p.id === id);
-    projects[index] = updated;
-    saveProjects();
+  useEffect(() => {
+    loadProjects();
+  }, [loadProjects]);
+
+  const addProject = useCallback(async (data) => {
+    if (!user) {
+      throw new Error('No authenticated user found.');
+    }
+
+    const payload = createProjectEntity(data);
+    const created = await createProject(user.id, payload);
+    setProjects((prev) => [created, ...prev]);
+    return created;
+  }, [user]);
+
+  const updateProjectById = useCallback(async (id, updates) => {
+    if (!user) {
+      throw new Error('No authenticated user found.');
+    }
+
+    const updated = await updateProject(user.id, id, updates);
+    setProjects((prev) => prev.map((project) => (project.id === id ? updated : project)));
     return updated;
-  };
+  }, [user]);
 
-  /**
-   * Delete a project
-   * @param {string} id - Project ID
-   * @returns {boolean} True if deleted, false if not found
-   */
-  const deleteProject = (id) => {
-    const index = projects.findIndex(p => p.id === id);
-    if (index === -1) {
-      return false;
+  const deleteProjectById = useCallback(async (id) => {
+    if (!user) {
+      throw new Error('No authenticated user found.');
     }
 
-    projects.splice(index, 1);
-    saveProjects();
+    await deleteProject(user.id, id);
+    setProjects((prev) => prev.filter((project) => project.id !== id));
     return true;
-  };
+  }, [user]);
 
-  /**
-   * Get total project count
-   * @returns {number} Number of projects
-   */
-  const projectCount = () => projects.length;
-
-  return {
-    get projects() {
-      return getAllProjects();
-    },
+  return useMemo(() => ({
+    projects,
+    loading,
+    error,
     addProject,
-    getProjectById,
-    updateProject,
-    deleteProject,
-    projectCount,
-  };
+    getProjectById: (id) => projects.find((project) => project.id === id),
+    updateProject: updateProjectById,
+    deleteProject: deleteProjectById,
+    projectCount: () => projects.length,
+    reloadProjects: loadProjects,
+  }), [addProject, deleteProjectById, error, loadProjects, loading, projects, updateProjectById]);
 }

@@ -1,7 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { PomodoroTimer } from '../../src/features/Pomodoro/PomodoroTimer';
+
+vi.mock('../../src/hooks/usePomodoroSessions', () => ({
+  usePomodoroSessions: () => ({
+    addSession: vi.fn(),
+  }),
+}));
 
 describe('PomodoroTimer feature', () => {
   it('should render timer component', () => {

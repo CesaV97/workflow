@@ -39,3 +39,8 @@
   justify-content: flex-end;
   margin-top: var(--space-2);
 }
+
+.field-error {
+  color: #ff8e86;
+  font-size: var(--font-size-sm);
+}

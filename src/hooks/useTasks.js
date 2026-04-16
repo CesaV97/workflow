@@ -1,134 +1,83 @@
-import { useLocalStorage } from './useLocalStorage';
-import { createTask } from '../data/entities/Task';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { createTask as createTaskEntity } from '../data/entities/Task';
+import {
+  createTask,
+  deleteTask,
+  listTasks,
+  updateTask,
+} from '../lib/workflowApi';
 
-/**
- * Custom hook for managing tasks with localStorage persistence
- * Provides CRUD operations and filtering by project/status
- *
- * @returns {object} Task management interface:
- *   - tasks: Array of all tasks
- *   - addTask(data): Create and add new task
- *   - getTaskById(id): Retrieve task by ID
- *   - getTasksByProjectId(projectId): Get all tasks for a project
- *   - getTasksByStatus(status): Get all tasks with a status
- *   - updateTask(id, updates): Update task properties
- *   - deleteTask(id): Remove task by ID
- *   - taskCount(): Get total number of tasks
- */
 export function useTasks() {
-  const storage = useLocalStorage('tasks');
+  const { user, isConfigured } = useAuth();
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Load tasks from localStorage, default to empty array
-  let tasks = storage.getItem() || [];
-
-  /**
-   * Save tasks to localStorage
-   */
-  const saveTasks = () => {
-    storage.setItem(tasks);
-  };
-
-  /**
-   * Add a new task
-   * @param {object} data - Task data (projectId, name, status, etc.)
-   * @returns {object} Created task with ID and timestamps
-   */
-  const addTask = (data) => {
-    const newTask = createTask(data);
-    tasks.push(newTask);
-    saveTasks();
-    return newTask;
-  };
-
-  /**
-   * Get all tasks
-   * @returns {array} All tasks
-   */
-  const getAllTasks = () => tasks;
-
-  /**
-   * Get task by ID
-   * @param {string} id - Task ID
-   * @returns {object|undefined} Task or undefined if not found
-   */
-  const getTaskById = (id) => {
-    return tasks.find(t => t.id === id);
-  };
-
-  /**
-   * Get all tasks for a project
-   * @param {string} projectId - Project ID
-   * @returns {array} Tasks for the project
-   */
-  const getTasksByProjectId = (projectId) => {
-    return tasks.filter(t => t.projectId === projectId);
-  };
-
-  /**
-   * Get all tasks with a specific status
-   * @param {string} status - Task status (To Do, In Progress, etc.)
-   * @returns {array} Tasks with the status
-   */
-  const getTasksByStatus = (status) => {
-    return tasks.filter(t => t.status === status);
-  };
-
-  /**
-   * Update a task
-   * @param {string} id - Task ID
-   * @param {object} updates - Fields to update
-   * @returns {object|undefined} Updated task or undefined if not found
-   */
-  const updateTask = (id, updates) => {
-    const task = getTaskById(id);
-    if (!task) {
-      return undefined;
+  const loadTasks = useCallback(async () => {
+    if (!user || !isConfigured) {
+      setTasks([]);
+      return;
     }
 
-    const updated = {
-      ...task,
-      ...updates,
-      updatedAt: new Date().toISOString(),
-    };
+    setLoading(true);
+    setError('');
+    try {
+      const nextTasks = await listTasks(user.id);
+      setTasks(nextTasks);
+    } catch (loadError) {
+      setError(loadError.message ?? 'No se pudieron cargar las tareas.');
+    } finally {
+      setLoading(false);
+    }
+  }, [isConfigured, user]);
 
-    const index = tasks.findIndex(t => t.id === id);
-    tasks[index] = updated;
-    saveTasks();
+  useEffect(() => {
+    loadTasks();
+  }, [loadTasks]);
+
+  const addTask = useCallback(async (data) => {
+    if (!user) {
+      throw new Error('No authenticated user found.');
+    }
+
+    const payload = createTaskEntity(data);
+    const created = await createTask(user.id, payload);
+    setTasks((prev) => [created, ...prev]);
+    return created;
+  }, [user]);
+
+  const updateTaskById = useCallback(async (id, updates) => {
+    if (!user) {
+      throw new Error('No authenticated user found.');
+    }
+
+    const updated = await updateTask(user.id, id, updates);
+    setTasks((prev) => prev.map((task) => (task.id === id ? updated : task)));
     return updated;
-  };
+  }, [user]);
 
-  /**
-   * Delete a task
-   * @param {string} id - Task ID
-   * @returns {boolean} True if deleted, false if not found
-   */
-  const deleteTask = (id) => {
-    const index = tasks.findIndex(t => t.id === id);
-    if (index === -1) {
-      return false;
+  const deleteTaskById = useCallback(async (id) => {
+    if (!user) {
+      throw new Error('No authenticated user found.');
     }
 
-    tasks.splice(index, 1);
-    saveTasks();
+    await deleteTask(user.id, id);
+    setTasks((prev) => prev.filter((task) => task.id !== id));
     return true;
-  };
+  }, [user]);
 
-  /**
-   * Get total task count
-   * @returns {number} Number of tasks
-   */
-  const taskCount = () => tasks.length;
-
-  return {
-    get tasks() {
-      return getAllTasks();
-    },
+  return useMemo(() => ({
+    tasks,
+    loading,
+    error,
     addTask,
-    getTaskById,
-    getTasksByProjectId,
-    getTasksByStatus,
-    updateTask,
-    deleteTask,
-    taskCount,
-  };
+    getTaskById: (id) => tasks.find((task) => task.id === id),
+    getTasksByProjectId: (projectId) => tasks.filter((task) => task.projectId === projectId),
+    getTasksByStatus: (status) => tasks.filter((task) => task.status === status),
+    updateTask: updateTaskById,
+    deleteTask: deleteTaskById,
+    taskCount: () => tasks.length,
+    reloadTasks: loadTasks,
+  }), [addTask, deleteTaskById, error, loadTasks, loading, tasks, updateTaskById]);
 }

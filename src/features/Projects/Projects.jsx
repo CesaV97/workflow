@@ -6,17 +6,23 @@ import { ProjectForm } from './ProjectForm';
 import { Modal } from '../../components/Common/Modal';
 import './Projects.css';
 
-/**
- * Projects component - Main projects management page
- * Displays all projects with CRUD operations
- */
 export function Projects() {
-  const { projects, addProject } = useProjects();
+  const { projects, addProject, loading, error } = useProjects();
   const [showForm, setShowForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
-  const handleAddProject = (data) => {
-    addProject(data);
-    setShowForm(false);
+  const handleAddProject = async (data) => {
+    setSubmitting(true);
+    setSaveError('');
+    try {
+      await addProject(data);
+      setShowForm(false);
+    } catch (submitError) {
+      setSaveError(submitError.message ?? 'No se pudo crear el proyecto.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -28,7 +34,13 @@ export function Projects() {
         </Button>
       </div>
 
-      {projects.length === 0 ? (
+      {(error || saveError) && <div className="projects-error">{error || saveError}</div>}
+
+      {loading ? (
+        <div className="empty-state">
+          <p>Cargando proyectos...</p>
+        </div>
+      ) : projects.length === 0 ? (
         <div className="empty-state">
           <p>No projects yet. Create one to get started!</p>
         </div>
@@ -40,8 +52,8 @@ export function Projects() {
         </div>
       )}
 
-      <Modal isOpen={showForm} onClose={() => setShowForm(false)} title="New Project">
-        <ProjectForm onSubmit={handleAddProject} onCancel={() => setShowForm(false)} />
+      <Modal isOpen={showForm} onClose={() => !submitting && setShowForm(false)} title="New Project">
+        <ProjectForm onSubmit={handleAddProject} onCancel={() => setShowForm(false)} submitting={submitting} />
       </Modal>
     </div>
   );

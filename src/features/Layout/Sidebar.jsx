@@ -1,12 +1,5 @@
 import './Sidebar.css';
 
-/**
- * Sidebar component - Main navigation for the application
- * Fixed left sidebar with logo and navigation to all app sections.
- *
- * @param {function} onNavigate - Called with the view id when a nav item is clicked
- * @param {string} currentView - The currently active view id
- */
 export function Sidebar({ onNavigate, currentView }) {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard' },

@@ -9,14 +9,14 @@ function groupTasksByDate(tasks) {
   const groups = { today: [], tomorrow: [], upcoming: [] };
 
   tasks
-    .filter(t => t.status !== 'Done' && t.endDate)
-    .forEach(task => {
-      const d = new Date(task.endDate + 'T00:00:00');
-      if (d.getTime() === today.getTime()) {
+    .filter((task) => task.status !== 'Done' && task.endDate)
+    .forEach((task) => {
+      const dueDate = new Date(`${task.endDate}T00:00:00`);
+      if (dueDate.getTime() === today.getTime()) {
         groups.today.push(task);
-      } else if (d.getTime() === tomorrow.getTime()) {
+      } else if (dueDate.getTime() === tomorrow.getTime()) {
         groups.tomorrow.push(task);
-      } else if (d > today && d <= weekEnd) {
+      } else if (dueDate > today && dueDate <= weekEnd) {
         groups.upcoming.push(task);
       }
     });
@@ -37,22 +37,25 @@ export function WeeklyTasksList({ tasks = [], onTaskClick }) {
   const tomorrowLabel = tomorrow.toLocaleDateString('es-MX', { month: 'short', day: 'numeric' });
 
   const renderGroup = (label, taskList) => {
-    if (taskList.length === 0) return null;
+    if (taskList.length === 0) {
+      return null;
+    }
+
     return (
       <div className="task-date-group">
         <div className="task-date-label">{label}</div>
-        {taskList.map(task => (
+        {taskList.map((task) => (
           <div
             key={task.id}
             className="weekly-task-item"
-            onClick={() => onTaskClick && onTaskClick(task)}
+            onClick={() => onTaskClick?.(task)}
             role="button"
             tabIndex={0}
-            onKeyDown={e => e.key === 'Enter' && onTaskClick && onTaskClick(task)}
+            onKeyDown={(event) => event.key === 'Enter' && onTaskClick?.(task)}
           >
             <div className="weekly-task-name">{task.name}</div>
             <div className="weekly-task-meta">
-              {task.projectId && <span>{task.projectId}</span>}
+              {task.projectName && <span>{task.projectName}</span>}
               <span className={`task-status-inline status-${(task.status ?? '').toLowerCase().replaceAll(' ', '-')}`}>
                 {task.status}
               </span>

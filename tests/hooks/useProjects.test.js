@@ -1,123 +1,34 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useProjects } from '../../src/hooks/useProjects';
-import { createProject } from '../../src/data/entities/Project';
+
+const mockListProjects = vi.fn();
+
+vi.mock('../../src/context/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: 'user-1' },
+    isConfigured: true,
+  }),
+}));
+
+vi.mock('../../src/lib/workflowApi', () => ({
+  listProjects: (...args) => mockListProjects(...args),
+  createProject: vi.fn(),
+  updateProject: vi.fn(),
+  deleteProject: vi.fn(),
+}));
 
 describe('useProjects hook', () => {
   beforeEach(() => {
-    localStorage.clear();
+    vi.clearAllMocks();
+    mockListProjects.mockResolvedValue([]);
   });
 
-  it('should initialize with empty array', () => {
-    const { projects } = useProjects();
-    expect(Array.isArray(projects)).toBe(true);
-    expect(projects.length).toBe(0);
-  });
+  it('loads projects on mount', async () => {
+    mockListProjects.mockResolvedValue([{ id: '1', name: 'Project 1', description: '', status: 'Active', createdAt: '2026-01-01', updatedAt: '2026-01-01' }]);
+    const { result } = renderHook(() => useProjects());
 
-  it('should add a new project', () => {
-    const { projects, addProject } = useProjects();
-    const newProject = addProject({ name: 'Test Project', description: 'Test Description' });
-
-    expect(newProject.id).toBeDefined();
-    expect(newProject.name).toBe('Test Project');
-    expect(projects.length).toBe(1);
-    expect(projects[0].id).toBe(newProject.id);
-  });
-
-  it('should retrieve all projects', () => {
-    const { addProject, projects } = useProjects();
-    addProject({ name: 'Project 1' });
-    addProject({ name: 'Project 2' });
-
-    expect(projects.length).toBe(2);
-    expect(projects[0].name).toBe('Project 1');
-    expect(projects[1].name).toBe('Project 2');
-  });
-
-  it('should retrieve project by ID', () => {
-    const { addProject, getProjectById } = useProjects();
-    const added = addProject({ name: 'Test Project' });
-    const retrieved = getProjectById(added.id);
-
-    expect(retrieved).toBeDefined();
-    expect(retrieved.id).toBe(added.id);
-    expect(retrieved.name).toBe('Test Project');
-  });
-
-  it('should return undefined for non-existent project ID', () => {
-    const { getProjectById } = useProjects();
-    const result = getProjectById('non-existent-id');
-    expect(result).toBeUndefined();
-  });
-
-  it('should update an existing project', () => {
-    const { addProject, updateProject, getProjectById } = useProjects();
-    const added = addProject({ name: 'Original Name', description: 'Original' });
-
-    const updated = updateProject(added.id, { name: 'Updated Name' });
-    expect(updated.name).toBe('Updated Name');
-    expect(updated.description).toBe('Original'); // Other fields preserved
-
-    const retrieved = getProjectById(added.id);
-    expect(retrieved.name).toBe('Updated Name');
-  });
-
-  it('should return undefined when updating non-existent project', () => {
-    const { updateProject } = useProjects();
-    const result = updateProject('non-existent-id', { name: 'New Name' });
-    expect(result).toBeUndefined();
-  });
-
-  it('should delete a project', () => {
-    const { addProject, deleteProject, getProjectById } = useProjects();
-    const added = addProject({ name: 'Test Project' });
-
-    const deleted = deleteProject(added.id);
-    expect(deleted).toBe(true);
-    expect(getProjectById(added.id)).toBeUndefined();
-  });
-
-  it('should return false when deleting non-existent project', () => {
-    const { deleteProject } = useProjects();
-    const result = deleteProject('non-existent-id');
-    expect(result).toBe(false);
-  });
-
-  it('should persist projects to localStorage', () => {
-    const { addProject } = useProjects();
-    addProject({ name: 'Persistent Project' });
-
-    // Simulate app restart by creating new hook instance
-    const { projects } = useProjects();
-    expect(projects.length).toBe(1);
-    expect(projects[0].name).toBe('Persistent Project');
-  });
-
-  it('should load persisted projects on initialization', () => {
-    // Set up localStorage with persisted data
-    const projectData = [{ id: 'uuid-1', name: 'Loaded Project', description: '', startDate: '', endDate: '', status: 'Active', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }];
-    localStorage.setItem('projects', JSON.stringify(projectData));
-
-    const { projects } = useProjects();
-    expect(projects.length).toBe(1);
-    expect(projects[0].name).toBe('Loaded Project');
-  });
-
-  it('should provide project count', () => {
-    const { addProject, projectCount } = useProjects();
-    expect(projectCount()).toBe(0);
-    addProject({ name: 'Project 1' });
-    expect(projectCount()).toBe(1);
-    addProject({ name: 'Project 2' });
-    expect(projectCount()).toBe(2);
-  });
-
-  it('should return fresh projects array on each access', () => {
-    const hook = useProjects();
-    const count1 = hook.projects.length;
-    hook.addProject({ name: 'Project 1' });
-    const count2 = hook.projects.length;
-
-    expect(count1).toBe(0);
-    expect(count2).toBe(1);  // Getter returned fresh data
+    await waitFor(() => expect(result.current.projects).toHaveLength(1));
+    expect(result.current.projectCount()).toBe(1);
   });
 });

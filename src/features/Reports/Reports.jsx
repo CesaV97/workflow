@@ -2,16 +2,13 @@ import { usePomodoroSessions } from '../../hooks/usePomodoroSessions';
 import { POMODORO_TYPES } from '../../constants/pomodoroConfig';
 import './Reports.css';
 
-/**
- * Reports page — shows Work vs Rest session summary and history.
- */
 export function Reports() {
-  const { sessions } = usePomodoroSessions();
+  const { sessions, loading, error } = usePomodoroSessions();
 
-  const workSessions = sessions.filter(s => s.type === POMODORO_TYPES.WORK);
-  const restSessions = sessions.filter(s => s.type === POMODORO_TYPES.REST);
-  const totalWork = workSessions.reduce((acc, s) => acc + s.duration, 0);
-  const totalRest = restSessions.reduce((acc, s) => acc + s.duration, 0);
+  const workSessions = sessions.filter((session) => session.type === POMODORO_TYPES.WORK);
+  const restSessions = sessions.filter((session) => session.type === POMODORO_TYPES.REST);
+  const totalWork = workSessions.reduce((acc, session) => acc + session.duration, 0);
+  const totalRest = restSessions.reduce((acc, session) => acc + session.duration, 0);
   const total = totalWork + totalRest;
   const workPct = total > 0 ? Math.round((totalWork / total) * 100) : 0;
   const restPct = total > 0 ? 100 - workPct : 0;
@@ -19,6 +16,8 @@ export function Reports() {
   return (
     <main className="reports">
       <h1 className="reports-title">Reportes</h1>
+
+      {error && <p className="empty-state">{error}</p>}
 
       <div className="reports-summary">
         <div className="summary-card">
@@ -39,20 +38,12 @@ export function Reports() {
         </div>
       </div>
 
-      {total > 0 && (
+      {!loading && total > 0 && (
         <div className="reports-distribution">
-          <h2 className="section-title">Distribución Trabajo / Descanso</h2>
+          <h2 className="section-title">Distribución trabajo / descanso</h2>
           <div className="distribution-bar-container">
-            <div
-              className="distribution-bar distribution-bar--work"
-              style={{ width: `${workPct}%` }}
-              title={`Trabajo: ${workPct}%`}
-            />
-            <div
-              className="distribution-bar distribution-bar--rest"
-              style={{ width: `${restPct}%` }}
-              title={`Descanso: ${restPct}%`}
-            />
+            <div className="distribution-bar distribution-bar--work" style={{ width: `${workPct}%` }} title={`Trabajo: ${workPct}%`} />
+            <div className="distribution-bar distribution-bar--rest" style={{ width: `${restPct}%` }} title={`Descanso: ${restPct}%`} />
           </div>
           <div className="distribution-legend">
             <span className="legend-item legend-item--work">⬛ Trabajo {workPct}%</span>
@@ -62,12 +53,14 @@ export function Reports() {
       )}
 
       <div className="reports-history">
-        <h2 className="section-title">Historial de Sesiones</h2>
-        {sessions.length === 0 ? (
+        <h2 className="section-title">Historial de sesiones</h2>
+        {loading ? (
+          <p className="empty-state">Cargando sesiones...</p>
+        ) : sessions.length === 0 ? (
           <p className="empty-state">No hay sesiones registradas aún. Usa el timer Pomodoro para comenzar.</p>
         ) : (
           <ul className="session-history-list">
-            {[...sessions].reverse().map(session => (
+            {sessions.map((session) => (
               <li key={session.id} className="session-history-item">
                 <span className={`session-type-badge session-type-badge--${session.type.toLowerCase()}`}>
                   {session.type === POMODORO_TYPES.WORK ? 'TRABAJO' : 'DESCANSO'}

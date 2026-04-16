@@ -1,11 +1,6 @@
 import './TopBar.css';
 
-/**
- * TopBar component - Top navigation bar with search and actions.
- *
- * @param {string} title - Current page title (unused visually, kept for context)
- */
-export function TopBar({ title }) {
+export function TopBar({ userEmail, onSignOut, onNavigate }) {
   return (
     <header className="topbar">
       <div className="topbar-search">
@@ -14,11 +9,19 @@ export function TopBar({ title }) {
           type="search"
           placeholder="Buscar proyectos o tareas..."
           aria-label="Buscar proyectos o tareas"
+          disabled
         />
       </div>
       <div className="topbar-actions">
-        <button className="btn-nuevo" aria-label="Nuevo">+ Nuevo</button>
-        <button className="topbar-profile" aria-label="Perfil">⚙️ Perfil</button>
+        <button className="btn-nuevo" aria-label="Nueva tarea" onClick={() => onNavigate?.('tasks')}>
+          + Nueva tarea
+        </button>
+        <div className="topbar-user">
+          <span className="topbar-user-email">{userEmail}</span>
+          <button className="topbar-profile" aria-label="Cerrar sesión" onClick={onSignOut}>
+            Salir
+          </button>
+        </div>
       </div>
     </header>
   );

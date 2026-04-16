@@ -1,133 +1,81 @@
-import { useLocalStorage } from './useLocalStorage';
-import { createPomodoroSession } from '../data/entities/PomodoroSession';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import {
+  createSession,
+  deleteSession,
+  listSessions,
+  updateSession,
+} from '../lib/workflowApi';
 
-/**
- * Custom hook for managing Pomodoro sessions with localStorage persistence
- * Provides CRUD operations and filtering by task/type
- *
- * @returns {object} Session management interface:
- *   - sessions: Array of all sessions
- *   - addSession(data): Create and add new session
- *   - getSessionById(id): Retrieve session by ID
- *   - getSessionsByTaskId(taskId): Get all sessions for a task
- *   - getSessionsByType(type): Get all sessions of a type (Work/Rest)
- *   - updateSession(id, updates): Update session properties
- *   - deleteSession(id): Remove session by ID
- *   - sessionCount(): Get total number of sessions
- */
 export function usePomodoroSessions() {
-  const storage = useLocalStorage('pomodoroSessions');
+  const { user, isConfigured } = useAuth();
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Load sessions from localStorage, default to empty array
-  let sessions = storage.getItem() || [];
-
-  /**
-   * Save sessions to localStorage
-   */
-  const saveSessions = () => {
-    storage.setItem(sessions);
-  };
-
-  /**
-   * Add a new session
-   * @param {object} data - Session data (taskId, type, duration, startTime, endTime, status)
-   * @returns {object} Created session with generated ID
-   */
-  const addSession = (data) => {
-    const newSession = createPomodoroSession(data);
-    sessions.push(newSession);
-    saveSessions();
-    return newSession;
-  };
-
-  /**
-   * Get all sessions
-   * @returns {array} All sessions
-   */
-  const getAllSessions = () => sessions;
-
-  /**
-   * Get session by ID
-   * @param {string} id - Session ID
-   * @returns {object|undefined} Session or undefined if not found
-   */
-  const getSessionById = (id) => {
-    return sessions.find(s => s.id === id);
-  };
-
-  /**
-   * Get all sessions for a task
-   * @param {string} taskId - Task ID
-   * @returns {array} Sessions for the task
-   */
-  const getSessionsByTaskId = (taskId) => {
-    return sessions.filter(s => s.taskId === taskId);
-  };
-
-  /**
-   * Get all sessions of a type
-   * @param {string} type - Session type (Work or Rest)
-   * @returns {array} Sessions of the type
-   */
-  const getSessionsByType = (type) => {
-    return sessions.filter(s => s.type === type);
-  };
-
-  /**
-   * Update a session
-   * @param {string} id - Session ID
-   * @param {object} updates - Fields to update
-   * @returns {object|undefined} Updated session or undefined if not found
-   */
-  const updateSession = (id, updates) => {
-    const session = getSessionById(id);
-    if (!session) {
-      return undefined;
+  const loadSessions = useCallback(async () => {
+    if (!user || !isConfigured) {
+      setSessions([]);
+      return;
     }
 
-    const updated = {
-      ...session,
-      ...updates,
-    };
+    setLoading(true);
+    setError('');
+    try {
+      const nextSessions = await listSessions(user.id);
+      setSessions(nextSessions);
+    } catch (loadError) {
+      setError(loadError.message ?? 'No se pudieron cargar las sesiones.');
+    } finally {
+      setLoading(false);
+    }
+  }, [isConfigured, user]);
 
-    const index = sessions.findIndex(s => s.id === id);
-    sessions[index] = updated;
-    saveSessions();
+  useEffect(() => {
+    loadSessions();
+  }, [loadSessions]);
+
+  const addSession = useCallback(async (data) => {
+    if (!user) {
+      throw new Error('No authenticated user found.');
+    }
+
+    const created = await createSession(user.id, data);
+    setSessions((prev) => [created, ...prev]);
+    return created;
+  }, [user]);
+
+  const updateSessionById = useCallback(async (id, updates) => {
+    if (!user) {
+      throw new Error('No authenticated user found.');
+    }
+
+    const updated = await updateSession(user.id, id, updates);
+    setSessions((prev) => prev.map((session) => (session.id === id ? updated : session)));
     return updated;
-  };
+  }, [user]);
 
-  /**
-   * Delete a session
-   * @param {string} id - Session ID
-   * @returns {boolean} True if deleted, false if not found
-   */
-  const deleteSession = (id) => {
-    const index = sessions.findIndex(s => s.id === id);
-    if (index === -1) {
-      return false;
+  const deleteSessionById = useCallback(async (id) => {
+    if (!user) {
+      throw new Error('No authenticated user found.');
     }
 
-    sessions.splice(index, 1);
-    saveSessions();
+    await deleteSession(user.id, id);
+    setSessions((prev) => prev.filter((session) => session.id !== id));
     return true;
-  };
+  }, [user]);
 
-  /**
-   * Get total session count
-   * @returns {number} Number of sessions
-   */
-  const sessionCount = () => sessions.length;
-
-  return {
-    get sessions() {
-      return getAllSessions();
-    },
+  return useMemo(() => ({
+    sessions,
+    loading,
+    error,
     addSession,
-    getSessionById,
-    getSessionsByTaskId,
-    getSessionsByType,
-    updateSession,
-    deleteSession,
-    sessionCount,
-  };
+    getSessionById: (id) => sessions.find((session) => session.id === id),
+    getSessionsByTaskId: (taskId) => sessions.filter((session) => session.taskId === taskId),
+    getSessionsByType: (type) => sessions.filter((session) => session.type === type),
+    updateSession: updateSessionById,
+    deleteSession: deleteSessionById,
+    sessionCount: () => sessions.length,
+    reloadSessions: loadSessions,
+  }), [addSession, deleteSessionById, error, loadSessions, loading, sessions, updateSessionById]);
 }

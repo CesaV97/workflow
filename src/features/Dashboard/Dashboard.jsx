@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useProjects } from '../../hooks/useProjects';
 import { useTasks } from '../../hooks/useTasks';
 import { ProjectGrid } from './ProjectGrid';
@@ -7,24 +6,9 @@ import './Dashboard.css';
 
 export function Dashboard({ onTaskSelect }) {
   const projectsHook = useProjects();
-  const { tasks, taskCount } = useTasks();
-  const [projects, setProjects] = useState(projectsHook.projects);
-
-  const handleAddProject = (data) => {
-    const newProject = projectsHook.addProject(data);
-    setProjects((prev) => [...prev, newProject]);
-  };
-
-  const handleUpdateProject = (id, data) => {
-    const updated = projectsHook.updateProject(id, data);
-    if (!updated) return;
-    setProjects((prev) => prev.map((p) => (p.id === id ? updated : p)));
-  };
-
-  const handleDeleteProject = (id) => {
-    projectsHook.deleteProject(id);
-    setProjects((prev) => prev.filter((p) => p.id !== id));
-  };
+  const tasksHook = useTasks();
+  const { projects, loading: projectsLoading, error: projectsError } = projectsHook;
+  const { tasks, taskCount, loading: tasksLoading, error: tasksError } = tasksHook;
 
   return (
     <main className="dashboard">
@@ -42,20 +26,32 @@ export function Dashboard({ onTaskSelect }) {
         </div>
       </div>
 
+      {(projectsError || tasksError) && (
+        <div className="dashboard-error">{projectsError || tasksError}</div>
+      )}
+
       <div className="dashboard-grid">
         <section className="dashboard-section">
-          <h2 className="section-title">Proyectos Activos</h2>
-          <ProjectGrid
-            projects={projects}
-            onAdd={handleAddProject}
-            onUpdate={handleUpdateProject}
-            onDelete={handleDeleteProject}
-          />
+          <h2 className="section-title">Proyectos activos</h2>
+          {projectsLoading ? (
+            <p className="empty-state">Cargando proyectos...</p>
+          ) : (
+            <ProjectGrid
+              projects={projects}
+              onAdd={projectsHook.addProject}
+              onUpdate={projectsHook.updateProject}
+              onDelete={projectsHook.deleteProject}
+            />
+          )}
         </section>
 
         <section className="dashboard-section">
-          <h2 className="section-title">Esta Semana</h2>
-          <WeeklyTasksList tasks={tasks} onTaskClick={onTaskSelect} />
+          <h2 className="section-title">Esta semana</h2>
+          {tasksLoading ? (
+            <p className="empty-state">Cargando tareas...</p>
+          ) : (
+            <WeeklyTasksList tasks={tasks} onTaskClick={onTaskSelect} />
+          )}
         </section>
       </div>
     </main>

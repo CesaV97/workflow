@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Sidebar } from './features/Layout/Sidebar';
 import { TopBar } from './features/Layout/TopBar';
 import { MainContent } from './features/Layout/MainContent';
@@ -8,18 +8,73 @@ import { Tasks } from './features/Tasks/Tasks';
 import { Reports } from './features/Reports/Reports';
 import { Settings } from './features/Settings/Settings';
 import { TaskDetailPanel } from './features/TaskDetail/TaskDetailPanel';
+import { AuthScreen } from './features/Auth/AuthScreen';
+import { useAuth } from './context/AuthContext';
+import { migrateLocalDataToSupabase } from './lib/localMigration';
 import './App.css';
 
-/**
- * App — root component with sidebar navigation, top bar, main content area,
- * and a TaskDetail slide-out panel that opens when a task is selected.
- */
 export function App() {
+  const { user, loading: authLoading, signOut, isConfigured } = useAuth();
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedTask, setSelectedTask] = useState(null);
+  const [migrationLoading, setMigrationLoading] = useState(false);
+  const [migrationError, setMigrationError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+
+    async function migrate() {
+      if (!user || !isConfigured) {
+        setMigrationLoading(false);
+        setMigrationError('');
+        return;
+      }
+
+      setMigrationLoading(true);
+      setMigrationError('');
+
+      try {
+        await migrateLocalDataToSupabase(user.id);
+      } catch (error) {
+        if (active) {
+          setMigrationError(error.message ?? 'No se pudieron migrar los datos locales.');
+        }
+      } finally {
+        if (active) {
+          setMigrationLoading(false);
+        }
+      }
+    }
+
+    migrate();
+
+    return () => {
+      active = false;
+    };
+  }, [isConfigured, user]);
 
   const handleTaskSelect = (task) => setSelectedTask(task);
   const handleTaskClose = () => setSelectedTask(null);
+
+  if (!isConfigured) {
+    return <AuthScreen configurationError />;
+  }
+
+  if (authLoading || migrationLoading) {
+    return (
+      <div className="app-status-screen">
+        <div className="app-status-card">
+          <h1>WorkFlow</h1>
+          <p>{migrationLoading ? 'Sincronizando tus datos...' : 'Cargando sesión...'}</p>
+          {migrationError && <p className="app-status-error">{migrationError}</p>}
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthScreen />;
+  }
 
   const renderContent = () => {
     switch (currentView) {
@@ -42,14 +97,13 @@ export function App() {
     <div className="app">
       <Sidebar onNavigate={setCurrentView} currentView={currentView} />
       <div className="app-main">
-        <TopBar />
+        <TopBar userEmail={user.email ?? ''} onSignOut={signOut} onNavigate={setCurrentView} />
         <MainContent>
+          {migrationError && <div className="app-banner-error">{migrationError}</div>}
           {renderContent()}
         </MainContent>
       </div>
-      {selectedTask && (
-        <TaskDetailPanel task={selectedTask} onClose={handleTaskClose} />
-      )}
+      {selectedTask && <TaskDetailPanel task={selectedTask} onClose={handleTaskClose} />}
     </div>
   );
 }

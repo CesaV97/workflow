@@ -95,3 +95,11 @@
   margin: 0;
   font-size: var(--font-size-lg);
 }
+
+.projects-error {
+  margin-bottom: var(--space-4);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(218, 54, 51, 0.12);
+  color: #ffb3ae;
+}

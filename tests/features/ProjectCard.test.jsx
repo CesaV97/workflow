@@ -24,10 +24,10 @@ describe('ProjectCard', () => {
     expect(screen.getByText('A test project')).toBeInTheDocument();
   });
 
-  it('renders "No description" when description is empty', () => {
-    const p = { ...mockProject, description: '' };
-    render(<ProjectCard project={p} onEdit={vi.fn()} onDelete={vi.fn()} />);
-    expect(screen.getByText('No description')).toBeInTheDocument();
+  it('renders "Sin descripción" when description is empty', () => {
+    const project = { ...mockProject, description: '' };
+    render(<ProjectCard project={project} onEdit={vi.fn()} onDelete={vi.fn()} />);
+    expect(screen.getByText('Sin descripción')).toBeInTheDocument();
   });
 
   it('calls onEdit with project when Edit button is clicked', async () => {

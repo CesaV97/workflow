@@ -26,14 +26,14 @@ describe('ProjectFormModal', () => {
     expect(screen.getByLabelText(/estado/i)).toBeInTheDocument();
   });
 
-  it('shows "Nuevo Proyecto" title in create mode', () => {
+  it('shows "Nuevo proyecto" title in create mode', () => {
     render(<ProjectFormModal isOpen={true} onClose={vi.fn()} onSave={vi.fn()} />);
-    expect(screen.getByText('Nuevo Proyecto')).toBeInTheDocument();
+    expect(screen.getByText('Nuevo proyecto')).toBeInTheDocument();
   });
 
-  it('shows "Editar Proyecto" title in edit mode', () => {
+  it('shows "Editar proyecto" title in edit mode', () => {
     render(<ProjectFormModal isOpen={true} onClose={vi.fn()} onSave={vi.fn()} project={mockProject} />);
-    expect(screen.getByText('Editar Proyecto')).toBeInTheDocument();
+    expect(screen.getByText('Editar proyecto')).toBeInTheDocument();
   });
 
   it('pre-fills fields with project data in edit mode', () => {

@@ -41,6 +41,17 @@
   gap: 12px;
 }
 
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-user-email {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
 .btn-nuevo {
   background: var(--color-success);
   color: white;

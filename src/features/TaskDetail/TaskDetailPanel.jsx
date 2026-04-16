@@ -3,48 +3,45 @@ import { useComments } from '../../hooks/useComments';
 import { PomodoroTimer } from '../Pomodoro/PomodoroTimer';
 import './TaskDetail.css';
 
-/**
- * TaskDetailPanel — right-side slide-out panel shown when a task is selected.
- * Shows task info, Pomodoro timer, and comments. Matches approved mockup.
- *
- * @param {object} task - Task object to display
- * @param {function} onClose - Called when user closes the panel
- */
 export function TaskDetailPanel({ task, onClose }) {
-  const { getCommentsByTaskId, addComment } = useComments();
+  const { getCommentsByTaskId, addComment, loading } = useComments();
   const [newComment, setNewComment] = useState('');
-  const [comments, setComments] = useState(getCommentsByTaskId(task.id));
+  const [submitting, setSubmitting] = useState(false);
+  const comments = getCommentsByTaskId(task.id);
 
-  const handleAddComment = () => {
-    if (!newComment.trim()) return;
-    const created = addComment(task.id, newComment);
-    if (created) setComments(prev => [...prev, created]);
-    else setComments(getCommentsByTaskId(task.id));
-    setNewComment('');
+  const handleAddComment = async () => {
+    if (!newComment.trim()) {
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await addComment(task.id, newComment);
+      setNewComment('');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const statusColorMap = {
     'To Do': '#8b949e',
     'In Progress': '#58a6ff',
-    'Paused': '#9e6a03',
-    'Blocked': '#da3633',
-    'Done': '#238636',
+    Paused: '#9e6a03',
+    Blocked: '#da3633',
+    Done: '#238636',
   };
   const statusColor = statusColorMap[task.status] || '#8b949e';
 
   return (
     <aside className="task-detail-panel">
       <div className="panel-header">
-        <h3 className="panel-header-title">Detalles de Tarea</h3>
-        <button className="panel-close" onClick={onClose} aria-label="Cerrar panel">✕</button>
+        <h3 className="panel-header-title">Detalles de tarea</h3>
+        <button className="panel-close" onClick={onClose} aria-label="Cerrar panel">×</button>
       </div>
 
       <div className="panel-body">
         <div className="panel-section">
           <h2 className="task-detail-title">{task.name}</h2>
-          {task.projectId && (
-            <div className="task-detail-project">{task.projectId}</div>
-          )}
+          {task.projectName && <div className="task-detail-project">{task.projectName}</div>}
         </div>
 
         <div className="panel-row">
@@ -62,7 +59,7 @@ export function TaskDetailPanel({ task, onClose }) {
                 <div className="date-item">
                   <div className="date-label">Inicio</div>
                   <div className="date-value">
-                    {new Date(task.startDate + 'T00:00:00').toLocaleDateString('es-MX', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {new Date(`${task.startDate}T00:00:00`).toLocaleDateString('es-MX', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
                 </div>
               )}
@@ -70,7 +67,7 @@ export function TaskDetailPanel({ task, onClose }) {
                 <div className="date-item">
                   <div className="date-label">Vencimiento</div>
                   <div className="date-value">
-                    {new Date(task.endDate + 'T00:00:00').toLocaleDateString('es-MX', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {new Date(`${task.endDate}T00:00:00`).toLocaleDateString('es-MX', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
                 </div>
               )}
@@ -86,17 +83,19 @@ export function TaskDetailPanel({ task, onClose }) {
         )}
 
         <div className="panel-section">
-          <label className="panel-label">Pomodoro Timer</label>
+          <label className="panel-label">Pomodoro timer</label>
           <PomodoroTimer taskId={task.id} />
         </div>
 
         <div className="panel-section">
           <label className="panel-label">Comentarios ({comments.length})</label>
 
-          {comments.length > 0 && (
+          {loading ? (
+            <p className="empty-state">Cargando comentarios...</p>
+          ) : comments.length > 0 && (
             <div className="comments-list">
-              {comments.map((comment, i) => (
-                <div key={comment.id} className={`comment-item ${i < comments.length - 1 ? 'comment-item--bordered' : ''}`}>
+              {comments.map((comment, index) => (
+                <div key={comment.id} className={`comment-item ${index < comments.length - 1 ? 'comment-item--bordered' : ''}`}>
                   <div className="comment-meta">
                     <span className="comment-author">Tú</span>
                     <span className="comment-date">
@@ -114,16 +113,12 @@ export function TaskDetailPanel({ task, onClose }) {
               className="comment-textarea"
               placeholder="Agregar comentario..."
               value={newComment}
-              onChange={e => setNewComment(e.target.value)}
+              onChange={(event) => setNewComment(event.target.value)}
               rows={2}
             />
             <div className="comment-submit-row">
-              <button
-                className="comment-submit-btn"
-                onClick={handleAddComment}
-                disabled={!newComment.trim()}
-              >
-                + Agregar
+              <button className="comment-submit-btn" onClick={handleAddComment} disabled={!newComment.trim() || submitting}>
+                {submitting ? 'Guardando...' : '+ Agregar'}
               </button>
             </div>
           </div>

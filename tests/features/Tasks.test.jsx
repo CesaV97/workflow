@@ -5,7 +5,19 @@ import { Tasks } from '../../src/features/Tasks/Tasks';
 vi.mock('../../src/hooks/useTasks', () => ({
   useTasks: () => ({
     tasks: [],
+    loading: false,
+    error: '',
     taskCount: () => 0,
+    addTask: vi.fn(),
+    updateTask: vi.fn(),
+    deleteTask: vi.fn(),
+  }),
+}));
+
+vi.mock('../../src/hooks/useProjects', () => ({
+  useProjects: () => ({
+    projects: [],
+    loading: false,
   }),
 }));
 

@@ -21,7 +21,10 @@
       "Bash(npx vitest *)",
       "Bash(cat vitest.config.js)",
       "Bash(cat vitest.config.ts)",
-      "Bash(cat vite.config.js)"
+      "Bash(cat vite.config.js)",
+      "Bash(claude plugin *)",
+      "Read(//c/tmp/**)",
+      "Read(//c/Users/**)"
     ]
   }
 }

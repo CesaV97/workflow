@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { App } from '../src/App';
 
-// Mock hooks to avoid localStorage issues
 vi.mock('../src/hooks/useProjects', () => ({
   useProjects: () => ({
     projects: [],
@@ -17,55 +17,50 @@ vi.mock('../src/hooks/useTasks', () => ({
   useTasks: () => ({
     tasks: [],
     taskCount: () => 0,
-    getTasksByProjectId: () => [],
-    getTasksByStatus: () => [],
-  }),
-}));
-
-vi.mock('../src/hooks/useComments', () => ({
-  useComments: () => ({
-    comments: [],
-    getCommentsByTaskId: () => [],
-    addComment: vi.fn(),
+    addTask: vi.fn(),
+    updateTask: vi.fn(),
+    deleteTask: vi.fn(),
+    getTasksByProjectId: vi.fn(() => []),
+    getTasksByStatus: vi.fn(() => []),
   }),
 }));
 
 vi.mock('../src/hooks/usePomodoroSessions', () => ({
   usePomodoroSessions: () => ({
     sessions: [],
-    sessionCount: () => 0,
     addSession: vi.fn(),
+    getSessionsByTaskId: vi.fn(() => []),
+    sessionCount: () => 0,
   }),
 }));
 
 describe('App component', () => {
-  it('should render the app container', () => {
+  it('renders Sidebar and TopBar', () => {
     render(<App />);
-    const appDiv = document.querySelector('.app');
-    expect(appDiv).toBeInTheDocument();
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/buscar/i)).toBeInTheDocument();
   });
 
-  it('should render sidebar navigation', () => {
+  it('renders Dashboard by default', () => {
     render(<App />);
-    const sidebar = screen.getByRole('navigation');
-    expect(sidebar).toBeInTheDocument();
+    expect(screen.getByText('Dashboard', { selector: 'h1' })).toBeInTheDocument();
   });
 
-  it('should render topbar header', () => {
+  it('navigates to Proyectos view', async () => {
     render(<App />);
-    const header = screen.getByRole('banner');
-    expect(header).toBeInTheDocument();
+    await userEvent.click(screen.getByText('Proyectos'));
+    expect(document.querySelector('.main-content')).toBeInTheDocument();
   });
 
-  it('should render main content area', () => {
+  it('navigates to Reportes view', async () => {
     render(<App />);
-    const mainContent = document.querySelector('.main-content');
-    expect(mainContent).toBeInTheDocument();
+    await userEvent.click(screen.getByText('Reportes'));
+    expect(screen.getByText('Reportes', { selector: 'h1' })).toBeInTheDocument();
   });
 
-  it('should display search input in topbar', () => {
+  it('navigates to Configuración view', async () => {
     render(<App />);
-    const searchInput = screen.getByRole('searchbox');
-    expect(searchInput).toBeInTheDocument();
+    await userEvent.click(screen.getByText('Configuración'));
+    expect(screen.getByText('Configuración', { selector: 'h1' })).toBeInTheDocument();
   });
 });

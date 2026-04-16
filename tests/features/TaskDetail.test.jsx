@@ -26,6 +26,10 @@ vi.mock('../../src/hooks/useComments', () => ({
   }),
 }));
 
+vi.mock('../../src/features/Pomodoro/PomodoroTimer', () => ({
+  PomodoroTimer: () => <div data-testid="pomodoro-timer" />,
+}));
+
 describe('TaskDetail feature', () => {
   it('should render task detail panel', () => {
     render(<TaskDetailPanel task={mockTask} onClose={() => {}} />);
@@ -49,6 +53,6 @@ describe('TaskDetail feature', () => {
 
   it('should render close button', () => {
     render(<TaskDetailPanel task={mockTask} onClose={() => {}} />);
-    expect(screen.getByRole('button', { name: /close/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /cerrar panel/i })).toBeInTheDocument();
   });
 });

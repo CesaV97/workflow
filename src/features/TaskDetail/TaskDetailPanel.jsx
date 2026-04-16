@@ -1,88 +1,134 @@
-import { useComments } from '../../hooks/useComments';
 import { useState } from 'react';
-import { Button } from '../../components/Common/Button';
-import { Badge } from '../../components/Common/Badge';
+import { useComments } from '../../hooks/useComments';
+import { PomodoroTimer } from '../Pomodoro/PomodoroTimer';
 import './TaskDetail.css';
 
+/**
+ * TaskDetailPanel — right-side slide-out panel shown when a task is selected.
+ * Shows task info, Pomodoro timer, and comments. Matches approved mockup.
+ *
+ * @param {object} task - Task object to display
+ * @param {function} onClose - Called when user closes the panel
+ */
 export function TaskDetailPanel({ task, onClose }) {
   const { getCommentsByTaskId, addComment } = useComments();
   const [newComment, setNewComment] = useState('');
-  const taskComments = getCommentsByTaskId(task.id);
+  const [comments, setComments] = useState(getCommentsByTaskId(task.id));
 
   const handleAddComment = () => {
-    if (newComment.trim()) {
-      addComment(task.id, newComment);
-      setNewComment('');
-    }
+    if (!newComment.trim()) return;
+    const created = addComment(task.id, newComment);
+    if (created) setComments(prev => [...prev, created]);
+    else setComments(getCommentsByTaskId(task.id));
+    setNewComment('');
   };
 
-  const getStatusColor = (status) => {
-    if (!status) return 'info';
-    switch (status.toLowerCase()) {
-      case 'to do': return 'info';
-      case 'in progress': return 'warning';
-      case 'done': return 'success';
-      default: return 'info';
-    }
+  const statusColorMap = {
+    'To Do': '#8b949e',
+    'In Progress': '#58a6ff',
+    'Paused': '#9e6a03',
+    'Blocked': '#da3633',
+    'Done': '#238636',
   };
+  const statusColor = statusColorMap[task.status] || '#8b949e';
 
   return (
-    <div className="task-detail-panel">
-      <div className="detail-header">
-        <h2 className="detail-title">{task.name}</h2>
-        <Button variant="secondary" onClick={onClose}>Close</Button>
+    <aside className="task-detail-panel">
+      <div className="panel-header">
+        <h3 className="panel-header-title">Detalles de Tarea</h3>
+        <button className="panel-close" onClick={onClose} aria-label="Cerrar panel">✕</button>
       </div>
 
-      <div className="task-info">
-        <div className="info-group">
-          <label className="info-label">Status</label>
-          <Badge color={getStatusColor(task.status)}>{task.status}</Badge>
+      <div className="panel-body">
+        <div className="panel-section">
+          <h2 className="task-detail-title">{task.name}</h2>
+          {task.projectId && (
+            <div className="task-detail-project">{task.projectId}</div>
+          )}
         </div>
+
+        <div className="panel-row">
+          <label className="panel-label">Estado</label>
+          <span className="task-detail-status" style={{ background: statusColor }}>
+            {task.status}
+          </span>
+        </div>
+
+        {(task.startDate || task.endDate) && (
+          <div className="panel-section">
+            <label className="panel-label">Fechas</label>
+            <div className="panel-dates">
+              {task.startDate && (
+                <div className="date-item">
+                  <div className="date-label">Inicio</div>
+                  <div className="date-value">
+                    {new Date(task.startDate + 'T00:00:00').toLocaleDateString('es-MX', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </div>
+                </div>
+              )}
+              {task.endDate && (
+                <div className="date-item">
+                  <div className="date-label">Vencimiento</div>
+                  <div className="date-value">
+                    {new Date(task.endDate + 'T00:00:00').toLocaleDateString('es-MX', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {task.description && (
-          <div className="info-group">
-            <label className="info-label">Description</label>
-            <p className="info-value">{task.description}</p>
+          <div className="panel-section">
+            <label className="panel-label">Descripción</label>
+            <div className="task-detail-description">{task.description}</div>
           </div>
         )}
 
-        <div className="info-group">
-          <label className="info-label">Created</label>
-          <p className="info-value">{new Date(task.createdAt).toLocaleString()}</p>
+        <div className="panel-section">
+          <label className="panel-label">Pomodoro Timer</label>
+          <PomodoroTimer taskId={task.id} />
         </div>
-      </div>
 
-      <div className="comments-section">
-        <h3 className="section-title">Comments</h3>
+        <div className="panel-section">
+          <label className="panel-label">Comentarios ({comments.length})</label>
 
-        {taskComments.length > 0 && (
-          <div className="comments-list">
-            {taskComments.map((comment) => (
-              <div key={comment.id} className="comment-item">
-                <p className="comment-text">{comment.text}</p>
-                <span className="comment-date">{new Date(comment.createdAt).toLocaleString()}</span>
-              </div>
-            ))}
+          {comments.length > 0 && (
+            <div className="comments-list">
+              {comments.map((comment, i) => (
+                <div key={comment.id} className={`comment-item ${i < comments.length - 1 ? 'comment-item--bordered' : ''}`}>
+                  <div className="comment-meta">
+                    <span className="comment-author">Tú</span>
+                    <span className="comment-date">
+                      {new Date(comment.createdAt).toLocaleString('es-MX', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                  <p className="comment-text">{comment.text}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="comment-input-box">
+            <textarea
+              className="comment-textarea"
+              placeholder="Agregar comentario..."
+              value={newComment}
+              onChange={e => setNewComment(e.target.value)}
+              rows={2}
+            />
+            <div className="comment-submit-row">
+              <button
+                className="comment-submit-btn"
+                onClick={handleAddComment}
+                disabled={!newComment.trim()}
+              >
+                + Agregar
+              </button>
+            </div>
           </div>
-        )}
-
-        <div className="comment-input-group">
-          <textarea
-            className="comment-input"
-            placeholder="Add a comment..."
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            rows="3"
-          />
-          <Button
-            variant="primary"
-            onClick={handleAddComment}
-            disabled={!newComment.trim()}
-          >
-            Add Comment
-          </Button>
         </div>
       </div>
-    </div>
+    </aside>
   );
 }

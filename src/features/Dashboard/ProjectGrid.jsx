@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ProjectCard } from './ProjectCard';
 import { ProjectFormModal } from './ProjectFormModal';
 
-export function ProjectGrid({ projects, onAdd, onUpdate, onDelete }) {
+export function ProjectGrid({ projects, tasks = [], onAdd, onUpdate, onDelete }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -47,14 +47,24 @@ export function ProjectGrid({ projects, onAdd, onUpdate, onDelete }) {
         <p className="empty-state">No hay proyectos aún. Crea uno para empezar.</p>
       ) : (
         <div className="project-grid">
-          {projects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onEdit={(nextProject) => { setSelectedProject(nextProject); setIsModalOpen(true); }}
-              onDelete={handleDelete}
-            />
-          ))}
+          {projects.map((project) => {
+            const projectTasks = tasks.filter(t => t.projectId === project.id);
+            const doneTasks = projectTasks.filter(t => t.status === 'Done');
+            const progress = projectTasks.length > 0
+              ? Math.round((doneTasks.length / projectTasks.length) * 100)
+              : 0;
+            return (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                taskCount={projectTasks.length}
+                doneCount={doneTasks.length}
+                progress={progress}
+                onEdit={(p) => { setSelectedProject(p); setIsModalOpen(true); }}
+                onDelete={handleDelete}
+              />
+            );
+          })}
         </div>
       )}
       <ProjectFormModal

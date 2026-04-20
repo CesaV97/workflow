@@ -12,7 +12,7 @@ html {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.5;
   color: var(--color-text-primary);
   background-color: var(--color-bg-primary);
@@ -80,6 +80,29 @@ a:hover {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-secondary);
+}
+
+/* Page layout — shared across all views */
+.page {
+  padding: 24px;
+  width: 100%;
+}
+
+.page-header {
+  margin-bottom: 28px;
+}
+
+.page-title {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 6px 0;
+}
+
+.page-subtitle {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+  margin: 0;
 }
 
 /* Utility Classes */

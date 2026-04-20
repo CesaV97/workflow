@@ -1,14 +1,13 @@
 .task-detail-panel {
-  position: fixed;
-  top: 0;
-  right: 0;
   width: var(--task-panel-width);
+  min-width: var(--task-panel-width);
   height: 100vh;
   background: var(--color-bg-secondary);
   border-left: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  z-index: 100;
+  flex-shrink: 0;
+  overflow-y: auto;
   animation: slideInRight var(--transition-normal) ease-out;
 }
 
@@ -202,3 +201,29 @@
 
 .comment-submit-btn:hover:not(:disabled) { opacity: 0.85; }
 .comment-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Status dropdown */
+.status-select-wrapper {
+  position: relative;
+}
+
+.status-select {
+  appearance: none;
+  background: var(--status-color, #8b949e);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 4px 28px 4px 10px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+.status-select:hover:not(:disabled) { opacity: 0.88; }
+.status-select:disabled { opacity: 0.6; cursor: not-allowed; }
+.status-select option { background: var(--color-bg-secondary); color: var(--color-text-primary); }

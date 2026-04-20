@@ -1,18 +1,44 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useComments } from '../../hooks/useComments';
+import { useTasksContext } from '../../context/TasksContext';
 import { PomodoroTimer } from '../Pomodoro/PomodoroTimer';
+import { TASK_STATUS } from '../../constants/taskStatus';
 import './TaskDetail.css';
+
+const STATUS_COLORS = {
+  'To Do': '#8b949e',
+  'In Progress': '#58a6ff',
+  'Paused': '#9e6a03',
+  'Blocked': '#da3633',
+  'Done': '#238636',
+};
 
 export function TaskDetailPanel({ task, onClose }) {
   const { getCommentsByTaskId, addComment, loading } = useComments();
+  const { updateTask } = useTasksContext();
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState(task.status);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
   const comments = getCommentsByTaskId(task.id);
 
-  const handleAddComment = async () => {
-    if (!newComment.trim()) {
-      return;
+  useEffect(() => {
+    setCurrentStatus(task.status);
+  }, [task.id, task.status]);
+
+  const handleStatusChange = async (e) => {
+    const newStatus = e.target.value;
+    setCurrentStatus(newStatus);
+    setUpdatingStatus(true);
+    try {
+      await updateTask(task.id, { ...task, status: newStatus });
+    } finally {
+      setUpdatingStatus(false);
     }
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return;
     setSubmitting(true);
     try {
       await addComment(task.id, newComment);
@@ -21,15 +47,6 @@ export function TaskDetailPanel({ task, onClose }) {
       setSubmitting(false);
     }
   };
-
-  const statusColorMap = {
-    'To Do': '#8b949e',
-    'In Progress': '#58a6ff',
-    Paused: '#9e6a03',
-    Blocked: '#da3633',
-    Done: '#238636',
-  };
-  const statusColor = statusColorMap[task.status] || '#8b949e';
 
   return (
     <aside className="task-detail-panel">
@@ -46,9 +63,18 @@ export function TaskDetailPanel({ task, onClose }) {
 
         <div className="panel-row">
           <label className="panel-label">Estado</label>
-          <span className="task-detail-status" style={{ background: statusColor }}>
-            {task.status}
-          </span>
+          <div className="status-select-wrapper" style={{ '--status-color': STATUS_COLORS[currentStatus] || '#8b949e' }}>
+            <select
+              className="status-select"
+              value={currentStatus}
+              onChange={handleStatusChange}
+              disabled={updatingStatus}
+            >
+              {Object.values(TASK_STATUS).map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {(task.startDate || task.endDate) && (

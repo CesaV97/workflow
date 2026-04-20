@@ -24,7 +24,15 @@ function groupTasksByDate(tasks) {
   return groups;
 }
 
-export function WeeklyTasksList({ tasks = [], onTaskClick }) {
+function statusClass(s = '') {
+  return 'status-' + s.toLowerCase().replaceAll(' ', '-');
+}
+
+function StatusPill({ status }) {
+  return <span className={`task-status ${statusClass(status)}`}>{status}</span>;
+}
+
+export function WeeklyTasksList({ tasks = [], onTaskClick, selectedTaskId }) {
   const groups = groupTasksByDate(tasks);
   const hasAny = groups.today.length > 0 || groups.tomorrow.length > 0 || groups.upcoming.length > 0;
 
@@ -32,34 +40,36 @@ export function WeeklyTasksList({ tasks = [], onTaskClick }) {
     return <p className="empty-state">No hay tareas para esta semana.</p>;
   }
 
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowLabel = tomorrow.toLocaleDateString('es-MX', { month: 'short', day: 'numeric' });
+  const todayStr = new Date().toLocaleDateString('es-MX', { month: 'short', day: 'numeric' });
+  const tomorrowStr = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toLocaleDateString('es-MX', { month: 'short', day: 'numeric' });
+  })();
 
   const renderGroup = (label, taskList) => {
-    if (taskList.length === 0) {
-      return null;
-    }
-
+    if (taskList.length === 0) return null;
     return (
-      <div className="task-date-group">
+      <div className="task-date-group" key={label}>
         <div className="task-date-label">{label}</div>
         {taskList.map((task) => (
           <div
             key={task.id}
-            className="weekly-task-item"
+            className={`weekly-task-item ${selectedTaskId === task.id ? 'selected' : ''}`}
             onClick={() => onTaskClick?.(task)}
             role="button"
             tabIndex={0}
-            onKeyDown={(event) => event.key === 'Enter' && onTaskClick?.(task)}
+            onKeyDown={(e) => e.key === 'Enter' && onTaskClick?.(task)}
           >
-            <div className="weekly-task-name">{task.name}</div>
-            <div className="weekly-task-meta">
-              {task.projectName && <span>{task.projectName}</span>}
-              <span className={`task-status-inline status-${(task.status ?? '').toLowerCase().replaceAll(' ', '-')}`}>
-                {task.status}
-              </span>
+            <div className="weekly-task-top">
+              <div className="weekly-task-name">{task.name}</div>
+              <StatusPill status={task.status} />
             </div>
+            {task.projectName && (
+              <div className="weekly-task-meta">
+                <span>{task.projectName}</span>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -68,8 +78,8 @@ export function WeeklyTasksList({ tasks = [], onTaskClick }) {
 
   return (
     <div className="weekly-tasks">
-      {renderGroup('HOY', groups.today)}
-      {renderGroup(`MAÑANA (${tomorrowLabel})`, groups.tomorrow)}
+      {renderGroup(`HOY · ${todayStr}`, groups.today)}
+      {renderGroup(`MAÑANA · ${tomorrowStr}`, groups.tomorrow)}
       {renderGroup('PRÓXIMOS DÍAS', groups.upcoming)}
     </div>
   );

@@ -6,6 +6,10 @@
   overflow: hidden;
 }
 
+.app.panel-open .app-main {
+  min-width: 0;
+}
+
 .app-main {
   flex: 1;
   display: flex;

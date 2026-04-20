@@ -1,9 +1,46 @@
+import { useTheme } from '../../context/ThemeContext';
 import './TopBar.css';
+
+function SearchIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+  );
+}
+
+function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === 'dark';
+  return (
+    <button
+      className="icon-btn theme-toggle"
+      onClick={toggleTheme}
+      aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+      title={isDark ? 'Modo claro' : 'Modo oscuro'}
+    >
+      {isDark ? (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+        </svg>
+      ) : (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      )}
+    </button>
+  );
+}
 
 export function TopBar({ userEmail, onSignOut, onNavigate }) {
   return (
     <header className="topbar">
       <div className="topbar-search">
+        <span className="search-icon"><SearchIcon /></span>
         <input
           className="search-input"
           type="search"
@@ -11,10 +48,15 @@ export function TopBar({ userEmail, onSignOut, onNavigate }) {
           aria-label="Buscar proyectos o tareas"
           disabled
         />
+        <span className="kbd">⌘K</span>
       </div>
       <div className="topbar-actions">
+        <ThemeToggle />
         <button className="btn-nuevo" aria-label="Nueva tarea" onClick={() => onNavigate?.('tasks')}>
-          + Nueva tarea
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Nueva tarea
         </button>
         <div className="topbar-user">
           <span className="topbar-user-email">{userEmail}</span>

@@ -113,8 +113,8 @@ export function ProjectFormModal({ isOpen, onClose, onSave, project, submitting 
         </div>
 
         <div className="form-actions">
-          <button type="button" onClick={onClose} disabled={submitting}>Cancelar</button>
-          <button type="submit" disabled={submitting}>
+          <button type="button" className="btn btn-secondary" onClick={onClose} disabled={submitting}>Cancelar</button>
+          <button type="submit" className="btn btn-primary" disabled={submitting}>
             {submitting ? 'Guardando...' : isEditing ? 'Guardar cambios' : 'Crear proyecto'}
           </button>
         </div>

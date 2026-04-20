@@ -64,7 +64,7 @@ export function App() {
     return (
       <div className="app-status-screen">
         <div className="app-status-card">
-          <h1>WorkFlow</h1>
+          <h1>Task Flow</h1>
           <p>{migrationLoading ? 'Sincronizando tus datos...' : 'Cargando sesión...'}</p>
           {migrationError && <p className="app-status-error">{migrationError}</p>}
         </div>
@@ -79,7 +79,7 @@ export function App() {
   const renderContent = () => {
     switch (currentView) {
       case 'dashboard':
-        return <Dashboard onTaskSelect={handleTaskSelect} />;
+        return <Dashboard onTaskSelect={handleTaskSelect} onNavigate={setCurrentView} />;
       case 'projects':
         return <Projects />;
       case 'tasks':
@@ -94,7 +94,7 @@ export function App() {
   };
 
   return (
-    <div className="app">
+    <div className={`app${selectedTask ? ' panel-open' : ''}`}>
       <Sidebar onNavigate={setCurrentView} currentView={currentView} />
       <div className="app-main">
         <TopBar userEmail={user.email ?? ''} onSignOut={signOut} onNavigate={setCurrentView} />

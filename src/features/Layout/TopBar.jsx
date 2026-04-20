@@ -36,9 +36,14 @@ function ThemeToggle() {
   );
 }
 
-export function TopBar({ userEmail, onSignOut, onNavigate }) {
+export function TopBar({ userEmail, onSignOut, onNavigate, onMenuToggle }) {
   return (
     <header className="topbar">
+      <button className="topbar-menu-btn" onClick={onMenuToggle} aria-label="Menú">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
       <div className="topbar-search">
         <span className="search-icon"><SearchIcon /></span>
         <input

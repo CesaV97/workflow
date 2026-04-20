@@ -19,6 +19,7 @@ export function App() {
   const [selectedTask, setSelectedTask] = useState(null);
   const [migrationLoading, setMigrationLoading] = useState(false);
   const [migrationError, setMigrationError] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -93,11 +94,22 @@ export function App() {
     }
   };
 
+  const handleNavigate = (view) => {
+    setCurrentView(view);
+    setSidebarOpen(false);
+  };
+
   return (
-    <div className={`app${selectedTask ? ' panel-open' : ''}`}>
-      <Sidebar onNavigate={setCurrentView} currentView={currentView} />
+    <div className={`app${selectedTask ? ' panel-open' : ''}${sidebarOpen ? ' sidebar-mobile-open' : ''}`}>
+      {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
+      <Sidebar onNavigate={handleNavigate} currentView={currentView} />
       <div className="app-main">
-        <TopBar userEmail={user.email ?? ''} onSignOut={signOut} onNavigate={setCurrentView} />
+        <TopBar
+          userEmail={user.email ?? ''}
+          onSignOut={signOut}
+          onNavigate={setCurrentView}
+          onMenuToggle={() => setSidebarOpen(o => !o)}
+        />
         <MainContent>
           {migrationError && <div className="app-banner-error">{migrationError}</div>}
           {renderContent()}

@@ -88,6 +88,13 @@ a:hover {
   width: 100%;
 }
 
+@media (max-width: 768px) {
+  .page { padding: 16px; }
+  .dashboard-kpis { grid-template-columns: repeat(2, 1fr) !important; }
+  .dashboard-grid { grid-template-columns: 1fr !important; }
+  .projects-grid { grid-template-columns: 1fr !important; }
+}
+
 .page-header {
   margin-bottom: 28px;
 }

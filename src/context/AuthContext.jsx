@@ -53,7 +53,11 @@ export function AuthProvider({ children }) {
       },
       async signUp(email, password) {
         const client = getSupabaseClient();
-        const { error } = await client.auth.signUp({ email, password });
+        const { error } = await client.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: window.location.origin },
+        });
         if (error) {
           throw error;
         }

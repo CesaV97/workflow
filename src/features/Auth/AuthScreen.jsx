@@ -21,7 +21,7 @@ export function AuthScreen({ configurationError = false }) {
         await signIn(form.email, form.password);
       } else {
         await signUp(form.email, form.password);
-        setMessage('Cuenta creada. Revisa tu correo si Supabase exige confirmación.');
+        setMessage('Cuenta creada. Revisa tu correo para confirmar tu cuenta.');
       }
     } catch (submitError) {
       setError(submitError.message ?? 'No se pudo completar la autenticación.');
@@ -49,7 +49,7 @@ export function AuthScreen({ configurationError = false }) {
         <div className="auth-header">
           <span className="auth-kicker">Workflow</span>
           <h1 className="auth-title">Accede a tu espacio de trabajo</h1>
-          <p className="auth-copy">Usa tu cuenta de Supabase para guardar proyectos, tareas y sesiones Pomodoro.</p>
+          <p className="auth-copy">Crea una cuenta con tu email para guardar proyectos, tareas y sesiones Pomodoro.</p>
         </div>
 
         <div className="auth-mode-switch" role="tablist" aria-label="Authentication mode">

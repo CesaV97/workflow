@@ -1,11 +1,11 @@
 import { usePomodoroSessions } from '../../hooks/usePomodoroSessions';
-import { useTasks } from '../../hooks/useTasks';
+import { useTasksContext } from '../../context/TasksContext';
 import { POMODORO_TYPES } from '../../constants/pomodoroConfig';
 import './Reports.css';
 
 export function Reports() {
   const { sessions, loading, error } = usePomodoroSessions();
-  const { tasks } = useTasks();
+  const { tasks } = useTasksContext();
 
   const workSessions = sessions.filter(s => s.type === POMODORO_TYPES.WORK);
   const restSessions = sessions.filter(s => s.type === POMODORO_TYPES.REST);

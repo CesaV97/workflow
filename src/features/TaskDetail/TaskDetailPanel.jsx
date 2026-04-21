@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useComments } from '../../hooks/useComments';
 import { useTasksContext } from '../../context/TasksContext';
+import { usePomodoro } from '../../context/PomodoroContext';
 import { PomodoroTimer } from '../Pomodoro/PomodoroTimer';
 import { TASK_STATUS } from '../../constants/taskStatus';
 import './TaskDetail.css';
@@ -16,6 +17,7 @@ const STATUS_COLORS = {
 export function TaskDetailPanel({ task, onClose }) {
   const { getCommentsByTaskId, addComment, loading } = useComments();
   const { updateTask } = useTasksContext();
+  const { taskId: pomodoroTaskId, isActive, mm, ss, sessionType } = usePomodoro();
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(task.status);
@@ -110,7 +112,17 @@ export function TaskDetailPanel({ task, onClose }) {
 
         <div className="panel-section">
           <label className="panel-label">Pomodoro timer</label>
-          <PomodoroTimer taskId={task.id} />
+          {isActive && pomodoroTaskId !== task.id ? (
+            <div className="pomodoro-busy-notice">
+              <span className="pomodoro-busy-icon">🍅</span>
+              <div>
+                <div className="pomodoro-busy-title">Sesión activa en otra tarea</div>
+                <div className="pomodoro-busy-time">{mm}:{ss} · {sessionType}</div>
+              </div>
+            </div>
+          ) : (
+            <PomodoroTimer taskId={task.id} />
+          )}
         </div>
 
         <div className="panel-section">
@@ -118,7 +130,9 @@ export function TaskDetailPanel({ task, onClose }) {
 
           {loading ? (
             <p className="empty-state">Cargando comentarios...</p>
-          ) : comments.length > 0 && (
+          ) : comments.length === 0 ? (
+            <p className="empty-state">Sin comentarios aún.</p>
+          ) : (
             <div className="comments-list">
               {comments.map((comment, index) => (
                 <div key={comment.id} className={`comment-item ${index < comments.length - 1 ? 'comment-item--bordered' : ''}`}>

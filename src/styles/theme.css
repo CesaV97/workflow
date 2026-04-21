@@ -139,6 +139,19 @@ html[data-theme="light"] {
 [data-theme="light"] .activity-cell.l3 { background: rgba(26,127,55,0.75); }
 [data-theme="light"] .activity-cell.l4 { background: #1a7f37; }
 
+/* Active Pomodoro task highlight */
+.pomodoro-active {
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+  background: rgba(88, 166, 255, 0.04) !important;
+}
+
+.task-pomodoro-badge {
+  margin-right: 6px;
+  font-size: 14px;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
 /* Accessibility - Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   * {

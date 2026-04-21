@@ -118,7 +118,9 @@ export function PomodoroProvider({ children }) {
     return () => clearInterval(intervalRef.current);
   }, [running, startedAt, duration, handleCompletion]);
 
-  const attachTask = useCallback((id) => setTaskId(id), []);
+  const attachTask = useCallback((id) => {
+    if (!running) setTaskId(id);
+  }, [running]);
 
   const setDuration = useCallback((d) => {
     if (running) return;
@@ -130,14 +132,23 @@ export function PomodoroProvider({ children }) {
   const setSessionType = useCallback((t) => {
     if (running) return;
     setSessionTypeRaw(t);
-    setRemaining(duration * 60);
-  }, [running, duration]);
+    const newDur = t === POMODORO_TYPES.REST
+      ? POMODORO_DEFAULTS.restDuration
+      : POMODORO_DEFAULTS.workDuration;
+    setDurationRaw(newDur);
+    setRemaining(newDur * 60);
+  }, [running]);
 
   const handleStart = useCallback(() => {
     completedRef.current = false;
-    if (!startedAt) setStartedAt(new Date().toISOString());
+    // Adjust startedAt so interval math yields correct remaining on both
+    // fresh start (remaining = fullSeconds → startedAt = now) and
+    // resume after pause (remaining < fullSeconds → startedAt = now - elapsed)
+    const fullSeconds = duration * 60;
+    const adjusted = new Date(Date.now() - (fullSeconds - remaining) * 1000);
+    setStartedAt(adjusted.toISOString());
     setRunning(true);
-  }, [startedAt]);
+  }, [duration, remaining]);
 
   const handlePause = useCallback(() => {
     setRunning(false);

@@ -20,7 +20,7 @@ function Sparkline({ values, color = 'var(--color-accent)' }) {
   );
 }
 
-export function Dashboard({ onTaskSelect, onNavigate }) {
+export function Dashboard({ onTaskSelect, onNavigate, onNewTask }) {
   const projectsHook = useProjects();
   const tasksHook = useTasksContext();
   const { projects, loading: projectsLoading, error: projectsError } = projectsHook;
@@ -101,7 +101,7 @@ export function Dashboard({ onTaskSelect, onNavigate }) {
             <h2 className="section-title">Esta semana</h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span className="section-meta">{openTasks.length} pendientes</span>
-              <button className="btn-nuevo" onClick={() => onNavigate?.('tasks')} style={{ padding: '5px 12px' }}>
+              <button className="btn-nuevo" onClick={onNewTask} style={{ padding: '5px 12px' }}>
                 + Nueva tarea
               </button>
             </div>

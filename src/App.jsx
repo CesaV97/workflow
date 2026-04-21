@@ -8,19 +8,27 @@ import { Tasks } from './features/Tasks/Tasks';
 import { Reports } from './features/Reports/Reports';
 import { Settings } from './features/Settings/Settings';
 import { TaskDetailPanel } from './features/TaskDetail/TaskDetailPanel';
+import { TaskFormModal } from './features/Tasks/TaskFormModal';
 import { AuthScreen } from './features/Auth/AuthScreen';
 import { ToastContainer } from './components/Common/Toast';
 import { useAuth } from './context/AuthContext';
+import { useTasksContext } from './context/TasksContext';
+import { useProjects } from './hooks/useProjects';
 import { migrateLocalDataToSupabase } from './lib/localMigration';
 import './App.css';
 
 export function App() {
   const { user, loading: authLoading, signOut, isConfigured } = useAuth();
+  const { addTask, tasks } = useTasksContext();
+  const { projects, loading: projectsLoading } = useProjects();
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedTask, setSelectedTask] = useState(null);
   const [migrationLoading, setMigrationLoading] = useState(false);
   const [migrationError, setMigrationError] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [highlightProjectId, setHighlightProjectId] = useState(null);
+  const [newTaskOpen, setNewTaskOpen] = useState(false);
+  const [newTaskSubmitting, setNewTaskSubmitting] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -49,18 +57,29 @@ export function App() {
     }
 
     migrate();
-
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [isConfigured, user]);
 
   const handleTaskSelect = (task) => setSelectedTask(task);
-  const handleTaskClose = () => setSelectedTask(null);
+  const handleTaskClose  = () => setSelectedTask(null);
+  const handleNavigate   = (view, project = null) => {
+    setCurrentView(view);
+    setSidebarOpen(false);
+    if (project) setHighlightProjectId(project.id);
+  };
+  const handleOpenNewTask = () => setNewTaskOpen(true);
 
-  if (!isConfigured) {
-    return <AuthScreen configurationError />;
-  }
+  const handleNewTaskSave = async (formData) => {
+    setNewTaskSubmitting(true);
+    try {
+      await addTask(formData);
+      setNewTaskOpen(false);
+    } finally {
+      setNewTaskSubmitting(false);
+    }
+  };
+
+  if (!isConfigured) return <AuthScreen configurationError />;
 
   if (authLoading || migrationLoading) {
     return (
@@ -74,30 +93,17 @@ export function App() {
     );
   }
 
-  if (!user) {
-    return <AuthScreen />;
-  }
+  if (!user) return <AuthScreen />;
 
   const renderContent = () => {
     switch (currentView) {
-      case 'dashboard':
-        return <Dashboard onTaskSelect={handleTaskSelect} onNavigate={setCurrentView} />;
-      case 'projects':
-        return <Projects />;
-      case 'tasks':
-        return <Tasks onTaskSelect={handleTaskSelect} />;
-      case 'reports':
-        return <Reports />;
-      case 'settings':
-        return <Settings />;
-      default:
-        return <Dashboard onTaskSelect={handleTaskSelect} />;
+      case 'dashboard': return <Dashboard onTaskSelect={handleTaskSelect} onNavigate={setCurrentView} onNewTask={handleOpenNewTask} />;
+      case 'projects':  return <Projects highlightId={highlightProjectId} onHighlightClear={() => setHighlightProjectId(null)} onTaskSelect={handleTaskSelect} />;
+      case 'tasks':     return <Tasks onTaskSelect={handleTaskSelect} />;
+      case 'reports':   return <Reports />;
+      case 'settings':  return <Settings />;
+      default:          return <Dashboard onTaskSelect={handleTaskSelect} onNavigate={setCurrentView} onNewTask={handleOpenNewTask} />;
     }
-  };
-
-  const handleNavigate = (view) => {
-    setCurrentView(view);
-    setSidebarOpen(false);
   };
 
   return (
@@ -108,8 +114,12 @@ export function App() {
         <TopBar
           userEmail={user.email ?? ''}
           onSignOut={signOut}
-          onNavigate={setCurrentView}
+          onNavigate={handleNavigate}
           onMenuToggle={() => setSidebarOpen(o => !o)}
+          onNewTask={handleOpenNewTask}
+          tasks={tasks}
+          projects={projects}
+          onTaskSelect={handleTaskSelect}
         />
         <MainContent>
           {migrationError && <div className="app-banner-error">{migrationError}</div>}
@@ -117,6 +127,14 @@ export function App() {
         </MainContent>
       </div>
       {selectedTask && <TaskDetailPanel task={selectedTask} onClose={handleTaskClose} />}
+      <TaskFormModal
+        isOpen={newTaskOpen}
+        onClose={() => !newTaskSubmitting && setNewTaskOpen(false)}
+        onSave={handleNewTaskSave}
+        task={null}
+        projects={projects}
+        submitting={newTaskSubmitting}
+      />
       <ToastContainer />
     </div>
   );

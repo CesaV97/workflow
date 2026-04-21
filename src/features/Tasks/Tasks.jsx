@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTasksContext } from '../../context/TasksContext';
+import { usePomodoro } from '../../context/PomodoroContext';
 import { useProjects } from '../../hooks/useProjects';
 import { TaskFormModal } from './TaskFormModal';
 import './Tasks.css';
@@ -12,6 +13,8 @@ function statusClass(s = '') {
 
 export function Tasks({ onTaskSelect }) {
   const tasksHook = useTasksContext();
+  const { taskId: pomodoroTaskId, isActive } = usePomodoro();
+
   const projectsHook = useProjects();
   const { tasks, addTask, updateTask, deleteTask, loading, error } = tasksHook;
   const { projects, loading: projectsLoading } = projectsHook;
@@ -21,6 +24,7 @@ export function Tasks({ onTaskSelect }) {
   const [saveError, setSaveError] = useState('');
   const [statusFilter, setStatusFilter] = useState('Todos');
   const [projectFilter, setProjectFilter] = useState('all');
+
 
   const handleSave = async (formData) => {
     setSubmitting(true);
@@ -106,7 +110,7 @@ export function Tasks({ onTaskSelect }) {
           {filtered.map((task) => (
             <div
               key={task.id}
-              className="task-item"
+              className={`task-item${isActive && pomodoroTaskId === task.id ? ' pomodoro-active' : ''}`}
               onClick={() => onTaskSelect?.(task)}
               role="button"
               tabIndex={0}
@@ -115,7 +119,12 @@ export function Tasks({ onTaskSelect }) {
               <div className="task-item-main">
                 <div className="task-item-header">
                   <div>
-                    <h3 className="task-name">{task.name}</h3>
+                    <h3 className="task-name">
+                    {isActive && pomodoroTaskId === task.id && (
+                      <span className="task-pomodoro-badge" aria-label="Pomodoro activo">🍅</span>
+                    )}
+                    {task.name}
+                  </h3>
                     {task.projectName && <p className="task-project-name">{task.projectName}</p>}
                   </div>
                   <span className={`task-status ${statusClass(task.status)}`}>{task.status}</span>

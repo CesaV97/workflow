@@ -2,28 +2,51 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { PomodoroTimer } from '../../src/features/Pomodoro/PomodoroTimer';
 
-vi.mock('../../src/hooks/usePomodoroSessions', () => ({
-  usePomodoroSessions: () => ({
-    addSession: vi.fn(),
+vi.mock('../../src/context/PomodoroContext', () => ({
+  usePomodoro: () => ({
+    taskId: '1',
+    duration: 25,
+    sessionType: 'Work',
+    remaining: 1500,
+    running: false,
+    saving: false,
+    progress: 0,
+    mm: '25',
+    ss: '00',
+    isActive: false,
+    attachTask: vi.fn(),
+    setDuration: vi.fn(),
+    setSessionType: vi.fn(),
+    handleStart: vi.fn(),
+    handlePause: vi.fn(),
+    handleStop: vi.fn(),
   }),
 }));
 
 describe('PomodoroTimer feature', () => {
   it('should render timer component', () => {
     render(<PomodoroTimer taskId="1" />);
-    expect(screen.getByText(/25/)).toBeInTheDocument();
+    expect(screen.getByText('25:00')).toBeInTheDocument();
   });
 
-  it('should display duration controls', () => {
+  it('should display duration value', () => {
     render(<PomodoroTimer taskId="1" />);
-    const buttons = screen.getAllByRole('button');
-    expect(buttons.length).toBeGreaterThan(0);
+    expect(screen.getAllByText('25 min').length).toBeGreaterThan(0);
   });
 
-  it('should show work/rest toggle', () => {
+  it('should show Start button when not running', () => {
     render(<PomodoroTimer taskId="1" />);
-    const selectElement = screen.getByRole('combobox');
-    expect(selectElement).toBeInTheDocument();
-    expect(selectElement).toHaveValue('Work');
+    expect(screen.getByRole('button', { name: /start/i })).toBeInTheDocument();
+  });
+
+  it('should show Stop button', () => {
+    render(<PomodoroTimer taskId="1" />);
+    expect(screen.getByRole('button', { name: /stop/i })).toBeInTheDocument();
+  });
+
+  it('should show Work and Rest preset buttons', () => {
+    render(<PomodoroTimer taskId="1" />);
+    expect(screen.getByRole('button', { name: 'Work' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Rest' })).toBeInTheDocument();
   });
 });

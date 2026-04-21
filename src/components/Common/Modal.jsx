@@ -1,3 +1,5 @@
+import './Common.css';
+
 export function Modal({ isOpen, onClose, title, children }) {
   if (!isOpen) {
     return null;

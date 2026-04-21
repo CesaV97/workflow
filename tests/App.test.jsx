@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { App } from '../src/App';
 
 vi.mock('../src/context/AuthContext', () => ({
+  AuthProvider: ({ children }) => children,
   useAuth: () => ({
     user: { id: 'user-1', email: 'user@example.com' },
     loading: false,
@@ -21,15 +22,15 @@ vi.mock('../src/hooks/useProjects', () => ({
     projects: [],
     loading: false,
     error: '',
-    projectCount: () => 0,
     addProject: vi.fn(),
     updateProject: vi.fn(),
     deleteProject: vi.fn(),
   }),
 }));
 
-vi.mock('../src/hooks/useTasks', () => ({
-  useTasks: () => ({
+vi.mock('../src/context/TasksContext', () => ({
+  TasksProvider: ({ children }) => children,
+  useTasksContext: () => ({
     tasks: [],
     loading: false,
     error: '',
@@ -38,7 +39,6 @@ vi.mock('../src/hooks/useTasks', () => ({
     updateTask: vi.fn(),
     deleteTask: vi.fn(),
     getTasksByProjectId: vi.fn(() => []),
-    getTasksByStatus: vi.fn(() => []),
   }),
 }));
 
@@ -49,14 +49,34 @@ vi.mock('../src/hooks/usePomodoroSessions', () => ({
     error: '',
     addSession: vi.fn(),
     getSessionsByTaskId: vi.fn(() => []),
-    sessionCount: () => 0,
   }),
 }));
 
+vi.mock('../src/context/PomodoroContext', () => ({
+  PomodoroProvider: ({ children }) => children,
+  usePomodoro: () => ({
+    taskId: null, isActive: false, mm: '25', ss: '00', sessionType: 'Work',
+    toasts: [], dismissToast: vi.fn(),
+    attachTask: vi.fn(), setDuration: vi.fn(), setSessionType: vi.fn(),
+    handleStart: vi.fn(), handlePause: vi.fn(), handleStop: vi.fn(),
+  }),
+}));
+
+vi.mock('../src/context/SettingsContext', () => ({
+  SettingsProvider: ({ children }) => children,
+  useSettings: () => ({
+    notif: true, sound: false, autoBreak: true,
+    setNotif: vi.fn(), setSound: vi.fn(), setAutoBreak: vi.fn(),
+  }),
+}));
+
+vi.mock('../src/context/ThemeContext', () => ({
+  ThemeProvider: ({ children }) => children,
+  useTheme: () => ({ theme: 'dark', toggleTheme: vi.fn() }),
+}));
+
 describe('App component', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+  beforeEach(() => { vi.clearAllMocks(); });
 
   it('renders Sidebar and TopBar', async () => {
     render(<App />);
@@ -80,13 +100,13 @@ describe('App component', () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole('navigation')).toBeInTheDocument());
     await userEvent.click(screen.getByText('Reportes'));
-    expect(screen.getByText('Reportes', { selector: 'h1' })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('Reportes', { selector: 'h1' })).toBeInTheDocument());
   });
 
   it('navigates to Configuración view', async () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole('navigation')).toBeInTheDocument());
     await userEvent.click(screen.getByText('Configuración'));
-    expect(screen.getByText('Configuración', { selector: 'h1' })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('Configuración', { selector: 'h1' })).toBeInTheDocument());
   });
 });

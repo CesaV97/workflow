@@ -1,3 +1,5 @@
+import { usePomodoro } from '../../context/PomodoroContext';
+
 function groupTasksByDate(tasks) {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -33,6 +35,7 @@ function StatusPill({ status }) {
 }
 
 export function WeeklyTasksList({ tasks = [], onTaskClick, selectedTaskId }) {
+  const { taskId: pomodoroTaskId, isActive } = usePomodoro();
   const groups = groupTasksByDate(tasks);
   const hasAny = groups.today.length > 0 || groups.tomorrow.length > 0 || groups.upcoming.length > 0;
 
@@ -55,14 +58,19 @@ export function WeeklyTasksList({ tasks = [], onTaskClick, selectedTaskId }) {
         {taskList.map((task) => (
           <div
             key={task.id}
-            className={`weekly-task-item ${selectedTaskId === task.id ? 'selected' : ''}`}
+            className={`weekly-task-item ${selectedTaskId === task.id ? 'selected' : ''} ${isActive && pomodoroTaskId === task.id ? 'pomodoro-active' : ''}`}
             onClick={() => onTaskClick?.(task)}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => e.key === 'Enter' && onTaskClick?.(task)}
           >
             <div className="weekly-task-top">
-              <div className="weekly-task-name">{task.name}</div>
+              <div className="weekly-task-name">
+                {isActive && pomodoroTaskId === task.id && (
+                  <span className="task-pomodoro-badge" aria-label="Pomodoro activo">🍅</span>
+                )}
+                {task.name}
+              </div>
               <StatusPill status={task.status} />
             </div>
             {task.projectName && (

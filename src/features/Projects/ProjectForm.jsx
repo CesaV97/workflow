@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Button } from '../../components/Common/Button';
 import './ProjectForm.css';
 
-export function ProjectForm({ onSubmit, onCancel, submitting = false }) {
+export function ProjectForm({ onSubmit, onCancel, submitting = false, project = null }) {
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
+    name: project?.name ?? '',
+    description: project?.description ?? '',
   });
 
   const handleSubmit = (event) => {
@@ -49,7 +49,7 @@ export function ProjectForm({ onSubmit, onCancel, submitting = false }) {
           Cancel
         </Button>
         <Button variant="primary" type="submit" disabled={submitting}>
-          {submitting ? 'Saving...' : 'Create Project'}
+          {submitting ? 'Guardando...' : project ? 'Guardar cambios' : 'Crear proyecto'}
         </Button>
       </div>
     </form>

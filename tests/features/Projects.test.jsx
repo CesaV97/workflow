@@ -10,32 +10,31 @@ const mockProject = {
   startDate: '',
   endDate: '',
   createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
 };
 
 vi.mock('../../src/hooks/useProjects', () => ({
-  useProjects: vi.fn(() => ({
+  useProjects: () => ({
     projects: [mockProject],
-    projectCount: () => 1,
+    loading: false,
+    error: '',
     addProject: vi.fn(),
-  })),
+  }),
 }));
 
 describe('Projects feature', () => {
-  it('should render projects container', () => {
+  it('should render projects page', () => {
     render(<Projects />);
-    const container = document.querySelector('.projects');
-    expect(container).toBeInTheDocument();
+    expect(screen.getByRole('main')).toBeInTheDocument();
   });
 
-  it('should display projects title', () => {
+  it('should display Proyectos title', () => {
     render(<Projects />);
-    expect(screen.getByText('Projects')).toBeInTheDocument();
+    expect(screen.getByText('Proyectos')).toBeInTheDocument();
   });
 
-  it('should display add project button', () => {
+  it('should display nuevo proyecto button', () => {
     render(<Projects />);
-    expect(screen.getByRole('button', { name: /add|new|create/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /nuevo proyecto/i })).toBeInTheDocument();
   });
 
   it('should display project cards', () => {

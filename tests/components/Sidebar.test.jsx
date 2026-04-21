@@ -3,15 +3,19 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Sidebar } from '../../src/features/Layout/Sidebar';
 
+vi.mock('../../src/context/AuthContext', () => ({
+  useAuth: () => ({ user: { email: 'test@example.com' } }),
+}));
+
 describe('Sidebar component', () => {
   it('should render sidebar container', () => {
     render(<Sidebar onNavigate={vi.fn()} currentView="dashboard" />);
     expect(screen.getByRole('navigation')).toBeInTheDocument();
   });
 
-  it('should display app title with logo', () => {
+  it('should display app title', () => {
     render(<Sidebar onNavigate={vi.fn()} currentView="dashboard" />);
-    expect(screen.getByText('⚡ WorkFlow')).toBeInTheDocument();
+    expect(screen.getByText('Task Flow')).toBeInTheDocument();
   });
 
   it('should have all 5 navigation items', () => {
@@ -38,7 +42,7 @@ describe('Sidebar component', () => {
 
   it('should render at least 5 nav list items', () => {
     const { container } = render(<Sidebar onNavigate={vi.fn()} currentView="dashboard" />);
-    const listItems = container.querySelectorAll('.sidebar ul li');
+    const listItems = container.querySelectorAll('.sidebar-nav li');
     expect(listItems.length).toBeGreaterThanOrEqual(5);
   });
 });

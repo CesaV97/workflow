@@ -63,8 +63,8 @@
 
 .panel-row {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .panel-label {
@@ -202,26 +202,55 @@
 .comment-submit-btn:hover:not(:disabled) { opacity: 0.85; }
 .comment-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* Pomodoro busy notice */
+.pomodoro-busy-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.pomodoro-busy-icon { font-size: 22px; flex-shrink: 0; }
+
+.pomodoro-busy-title {
+  color: var(--color-text-primary);
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.pomodoro-busy-time {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-accent);
+}
+
 /* Status dropdown */
 .status-select-wrapper {
   position: relative;
+  width: 100%;
 }
 
 .status-select {
   appearance: none;
+  width: 100%;
   background: var(--status-color, #8b949e);
   color: #fff;
   border: none;
-  border-radius: var(--radius-sm);
-  padding: 4px 28px 4px 10px;
-  font-size: var(--font-size-xs);
+  border-radius: var(--radius-md);
+  padding: 8px 36px 8px 12px;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   transition: opacity var(--transition-fast);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 8px center;
+  background-position: right 12px center;
 }
 
 .status-select:hover:not(:disabled) { opacity: 0.88; }

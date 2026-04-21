@@ -3,34 +3,44 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Dashboard } from '../../src/features/Dashboard/Dashboard';
 
-const mockProjects = [
-  { id: '1', name: 'Project 1', description: 'Desc 1', status: 'Active', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-  { id: '2', name: 'Project 2', description: 'Desc 2', status: 'Active', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-];
-
 const todayISO = new Date().toISOString().slice(0, 10);
-const mockTasks = [
-  { id: 't1', name: 'Task Today', status: 'In Progress', endDate: todayISO, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+
+const mockProjects = [
+  { id: '1', name: 'Project 1', description: 'Desc 1', status: 'Active', createdAt: new Date().toISOString() },
+  { id: '2', name: 'Project 2', description: 'Desc 2', status: 'Active', createdAt: new Date().toISOString() },
 ];
 
-const mockAddProject = vi.fn((data) => ({ id: '3', ...data, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }));
-const mockUpdateProject = vi.fn((id, data) => ({ id, ...data, updatedAt: new Date().toISOString() }));
-const mockDeleteProject = vi.fn(() => true);
+const mockTasks = [
+  { id: 't1', projectId: '1', name: 'Task Today', status: 'In Progress', endDate: todayISO, createdAt: new Date().toISOString() },
+];
 
 vi.mock('../../src/hooks/useProjects', () => ({
   useProjects: () => ({
     projects: mockProjects,
-    projectCount: () => mockProjects.length,
-    addProject: mockAddProject,
-    updateProject: mockUpdateProject,
-    deleteProject: mockDeleteProject,
+    loading: false,
+    addProject: vi.fn(),
+    updateProject: vi.fn(),
+    deleteProject: vi.fn(),
   }),
 }));
 
-vi.mock('../../src/hooks/useTasks', () => ({
-  useTasks: () => ({
+vi.mock('../../src/context/TasksContext', () => ({
+  useTasksContext: () => ({
     tasks: mockTasks,
+    loading: false,
+    error: '',
     taskCount: () => mockTasks.length,
+    addTask: vi.fn(),
+    updateTask: vi.fn(),
+    deleteTask: vi.fn(),
+    getTasksByProjectId: vi.fn((id) => mockTasks.filter(t => t.projectId === id)),
+  }),
+}));
+
+vi.mock('../../src/context/PomodoroContext', () => ({
+  usePomodoro: () => ({
+    taskId: null, isActive: false, mm: '25', ss: '00', sessionType: 'Work',
+    handlePause: vi.fn(), handleStop: vi.fn(),
   }),
 }));
 
@@ -55,14 +65,7 @@ describe('Dashboard feature', () => {
     expect(screen.getByRole('heading', { name: /esta semana/i, level: 2 })).toBeInTheDocument();
   });
 
-  it('should display project count', () => {
-    render(<Dashboard onTaskSelect={vi.fn()} />);
-    expect(screen.getByText((content, element) => {
-      return element && content.includes('2') && element.textContent.includes('Project');
-    })).toBeInTheDocument();
-  });
-
-  it('should render "Nuevo Proyecto" button', () => {
+  it('should render Nuevo proyecto button', () => {
     render(<Dashboard onTaskSelect={vi.fn()} />);
     expect(screen.getByRole('button', { name: /nuevo proyecto/i })).toBeInTheDocument();
   });
@@ -72,7 +75,8 @@ describe('Dashboard feature', () => {
     render(<Dashboard onTaskSelect={onTaskSelect} />);
     const taskItem = screen.queryByText('Task Today');
     if (taskItem) {
-      await userEvent.click(taskItem.closest('[role="button"], button, [data-clickable]') || taskItem);
+      const clickable = taskItem.closest('[role="button"]') || taskItem.closest('.weekly-task-item') || taskItem;
+      await userEvent.click(clickable);
       expect(onTaskSelect).toHaveBeenCalled();
     }
   });

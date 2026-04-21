@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { usePomodoro } from '../../context/PomodoroContext';
 import './TopBar.css';
@@ -52,7 +53,87 @@ function MiniTimer() {
   );
 }
 
-export function TopBar({ userEmail, onSignOut, onNavigate, onMenuToggle }) {
+function SearchBar({ tasks = [], projects = [], onTaskSelect, onNavigate }) {
+  const [query, setQuery] = useState('');
+  const [open, setOpen] = useState(false);
+  const inputRef = useRef(null);
+  const containerRef = useRef(null);
+
+  const q = query.trim().toLowerCase();
+  const matchedTasks = q ? tasks.filter(t => t.name?.toLowerCase().includes(q)).slice(0, 5) : [];
+  const matchedProjects = q ? projects.filter(p => p.name?.toLowerCase().includes(q)).slice(0, 5) : [];
+  const hasResults = matchedTasks.length > 0 || matchedProjects.length > 0;
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') { setQuery(''); setOpen(false); inputRef.current?.blur(); }
+  };
+
+  const handleBlur = (e) => {
+    if (!containerRef.current?.contains(e.relatedTarget)) { setOpen(false); }
+  };
+
+  const selectTask = (task) => {
+    setQuery(''); setOpen(false);
+    onTaskSelect?.(task);
+  };
+
+  const selectProject = (project) => {
+    setQuery(''); setOpen(false);
+    onNavigate?.('projects', project);
+  };
+
+  return (
+    <div className="topbar-search" ref={containerRef} onBlur={handleBlur}>
+      <span className="search-icon"><SearchIcon /></span>
+      <input
+        ref={inputRef}
+        className="search-input"
+        type="search"
+        placeholder="Buscar proyectos o tareas..."
+        aria-label="Buscar proyectos o tareas"
+        value={query}
+        onChange={e => { setQuery(e.target.value); setOpen(true); }}
+        onFocus={() => q && setOpen(true)}
+        onKeyDown={handleKeyDown}
+        autoComplete="off"
+      />
+      {!query && <span className="kbd">⌘K</span>}
+      {open && hasResults && (
+        <div className="search-dropdown" role="listbox">
+          {matchedTasks.length > 0 && (
+            <>
+              <div className="search-dropdown-label">Tareas</div>
+              {matchedTasks.map(task => (
+                <button key={task.id} className="search-dropdown-item" role="option" onMouseDown={() => selectTask(task)}>
+                  <span className="search-item-icon">✓</span>
+                  <span className="search-item-name">{task.name}</span>
+                </button>
+              ))}
+            </>
+          )}
+          {matchedProjects.length > 0 && (
+            <>
+              <div className="search-dropdown-label">Proyectos</div>
+              {matchedProjects.map(project => (
+                <button key={project.id} className="search-dropdown-item" role="option" onMouseDown={() => selectProject(project)}>
+                  <span className="search-item-icon">◫</span>
+                  <span className="search-item-name">{project.name}</span>
+                </button>
+              ))}
+            </>
+          )}
+        </div>
+      )}
+      {open && q && !hasResults && (
+        <div className="search-dropdown">
+          <div className="search-dropdown-empty">Sin resultados</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function TopBar({ userEmail, onSignOut, onNavigate, onMenuToggle, onNewTask, tasks, projects, onTaskSelect }) {
   return (
     <header className="topbar">
       <button className="topbar-menu-btn" onClick={onMenuToggle} aria-label="Menú">
@@ -60,21 +141,11 @@ export function TopBar({ userEmail, onSignOut, onNavigate, onMenuToggle }) {
           <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
       </button>
-      <div className="topbar-search">
-        <span className="search-icon"><SearchIcon /></span>
-        <input
-          className="search-input"
-          type="search"
-          placeholder="Buscar proyectos o tareas..."
-          aria-label="Buscar proyectos o tareas"
-          disabled
-        />
-        <span className="kbd">⌘K</span>
-      </div>
+      <SearchBar tasks={tasks} projects={projects} onTaskSelect={onTaskSelect} onNavigate={onNavigate} />
       <MiniTimer />
       <div className="topbar-actions">
         <ThemeToggle />
-        <button className="btn-nuevo" aria-label="Nueva tarea" onClick={() => onNavigate?.('tasks')}>
+        <button className="btn-nuevo" aria-label="Nueva tarea" onClick={onNewTask}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>

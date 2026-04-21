@@ -71,7 +71,7 @@ export function TaskFormModal({ isOpen, onClose, onSave, task, projects, submitt
     <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? 'Editar tarea' : 'Nueva tarea'}>
       <form className="task-form" onSubmit={handleSubmit}>
         <div className="task-form-grid">
-          <label className="task-form-field">
+          <label className="task-form-field task-form-field--full">
             <span>Proyecto *</span>
             <select value={formData.projectId} onChange={(event) => setField('projectId', event.target.value)}>
               <option value="">Selecciona un proyecto</option>

@@ -1,3 +1,5 @@
+import './Common.css';
+
 /**
  * Button component - Reusable button with variants
  *

@@ -1,0 +1,28 @@
+Recomendaciones y cambios a aplicar
+
+1. Aislamiento de datos por usuario
+- Aplicar filtro explicito por user_id en todas las consultas de lectura, actualizacion y borrado en src/lib/workflowApi.js.
+- No depender solo de Row Level Security (RLS) en Supabase como unica barrera.
+- Mantener la validacion por id + user_id en update/delete para evitar modificaciones cruzadas si la politica cambia.
+
+2. Migracion automatica desde localStorage
+- Revisar src/lib/localMigration.js.
+- Hoy la migracion puede importar datos locales del navegador a la primera cuenta que inicie sesion en ese equipo.
+- Cambiar el flujo para pedir confirmacion explicita antes de migrar.
+- Idealmente asociar los datos locales a un identificador previo del dueño o desactivar la migracion automatica en equipos compartidos.
+
+3. Validaciones de seguridad y defensa en profundidad
+- Mantener las politicas RLS activas en PostgreSQL/Supabase para projects, tasks, comments y pomodoro_sessions.
+- Verificar que no existan clientes con service role expuestos en frontend.
+- Confirmar que VITE_SUPABASE_ANON_KEY sea solo publishable/anon y nunca una llave privilegiada.
+
+4. Pruebas
+- Conservar la prueba de regresion agregada para workflowApi y ampliar cobertura sobre scoping por usuario.
+- Agregar tests para asegurar que list/update/delete siempre incluyan user_id.
+- Separar en tests los problemas de seguridad de los problemas de UI.
+
+5. Fallos actuales del suite
+- El suite completo tiene fallos previos no relacionados con el parche de seguridad.
+- Varias pruebas no envuelven componentes con sus providers requeridos: AuthProvider, TasksProvider y PomodoroProvider.
+- Otras pruebas esperan textos antiguos o en ingles, pero la UI actual usa etiquetas en espanol.
+- Corregir esos tests para que reflejen el comportamiento y la estructura actual del proyecto.

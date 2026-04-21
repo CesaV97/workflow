@@ -9,6 +9,7 @@ import { Reports } from './features/Reports/Reports';
 import { Settings } from './features/Settings/Settings';
 import { TaskDetailPanel } from './features/TaskDetail/TaskDetailPanel';
 import { AuthScreen } from './features/Auth/AuthScreen';
+import { ToastContainer } from './components/Common/Toast';
 import { useAuth } from './context/AuthContext';
 import { migrateLocalDataToSupabase } from './lib/localMigration';
 import './App.css';
@@ -116,6 +117,7 @@ export function App() {
         </MainContent>
       </div>
       {selectedTask && <TaskDetailPanel task={selectedTask} onClose={handleTaskClose} />}
+      <ToastContainer />
     </div>
   );
 }

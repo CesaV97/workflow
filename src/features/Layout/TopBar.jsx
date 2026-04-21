@@ -1,4 +1,5 @@
 import { useTheme } from '../../context/ThemeContext';
+import { usePomodoro } from '../../context/PomodoroContext';
 import './TopBar.css';
 
 function SearchIcon() {
@@ -36,6 +37,21 @@ function ThemeToggle() {
   );
 }
 
+function MiniTimer() {
+  const { isActive, mm, ss, sessionType, handlePause, handleStop } = usePomodoro();
+  if (!isActive) return null;
+
+  return (
+    <div className={`topbar-mini-timer${sessionType === 'Rest' ? ' topbar-mini-timer--rest' : ''}`}>
+      <span className="mini-timer-dot" aria-hidden="true" />
+      <span className="mini-timer-time">{mm}:{ss}</span>
+      <span className="mini-timer-type">{sessionType}</span>
+      <button className="mini-timer-btn" onClick={handlePause} aria-label="Pausar temporizador">⏸</button>
+      <button className="mini-timer-btn" onClick={handleStop}  aria-label="Detener temporizador">⏹</button>
+    </div>
+  );
+}
+
 export function TopBar({ userEmail, onSignOut, onNavigate, onMenuToggle }) {
   return (
     <header className="topbar">
@@ -55,6 +71,7 @@ export function TopBar({ userEmail, onSignOut, onNavigate, onMenuToggle }) {
         />
         <span className="kbd">⌘K</span>
       </div>
+      <MiniTimer />
       <div className="topbar-actions">
         <ThemeToggle />
         <button className="btn-nuevo" aria-label="Nueva tarea" onClick={() => onNavigate?.('tasks')}>

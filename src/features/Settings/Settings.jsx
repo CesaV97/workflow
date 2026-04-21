@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useSettings } from '../../context/SettingsContext';
 import './Settings.css';
 
 function Toggle({ on, onChange }) {
@@ -19,9 +19,7 @@ function Toggle({ on, onChange }) {
 export function Settings() {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const [notif, setNotif] = useState(true);
-  const [sound, setSound] = useState(false);
-  const [autoBreak, setAutoBreak] = useState(true);
+  const { notif, sound, autoBreak, setNotif, setSound, setAutoBreak } = useSettings();
 
   const prefRows = [
     { label: 'Notificaciones', desc: 'Avisar cuando termine un Pomodoro', state: notif, set: setNotif },

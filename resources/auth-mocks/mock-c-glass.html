@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TaskFlow · Mock C · Glassmorphism</title>
+<style>
+  :root {
+    --text: #f0f6fc;
+    --muted: #c0c6cf;
+    --accent1: #4a9eff;
+    --accent2: #00d4ff;
+    --accent3: #00e5a0;
+    --accent4: #b18bff;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+  body {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: #07080c;
+  }
+  /* Mesh gradient animated */
+  .mesh {
+    position: fixed;
+    inset: -30%;
+    z-index: 0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(74, 158, 255, 0.55), transparent 35%),
+      radial-gradient(circle at 85% 15%, rgba(177, 139, 255, 0.45), transparent 35%),
+      radial-gradient(circle at 75% 85%, rgba(0, 229, 160, 0.50), transparent 35%),
+      radial-gradient(circle at 10% 90%, rgba(0, 212, 255, 0.45), transparent 40%),
+      #07080c;
+    filter: blur(60px) saturate(140%);
+    animation: meshShift 16s ease-in-out infinite alternate;
+  }
+  @keyframes meshShift {
+    0%   { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(1.08) rotate(2deg); }
+  }
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.4;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 3px);
+  }
+
+  .card {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 420px;
+    padding: 36px 32px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(28px) saturate(160%);
+    -webkit-backdrop-filter: blur(28px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin-bottom: 22px;
+    font-size: 20px;
+  }
+  .brand-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--accent1), var(--accent4) 40%, var(--accent2) 70%, var(--accent3));
+    background-size: 200% 200%;
+    animation: pulse 6s ease-in-out infinite;
+    box-shadow:
+      0 0 24px rgba(0, 212, 255, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  .brand-logo::after {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border-radius: 10px;
+    background: rgba(7, 8, 12, 0.8);
+    backdrop-filter: blur(4px);
+  }
+  @keyframes pulse {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+  .brand .flow {
+    background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  h1 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    letter-spacing: -0.01em;
+  }
+  .copy {
+    color: var(--muted);
+    margin: 0;
+    font-size: 14px;
+  }
+  form { display: grid; gap: 16px; }
+  .field { display: grid; gap: 8px; }
+  .field-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  label span {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    font-size: 15px;
+    backdrop-filter: blur(8px);
+    transition: border-color .15s, box-shadow .15s, background .15s;
+  }
+  input::placeholder { color: rgba(255, 255, 255, 0.35); }
+  input:focus {
+    outline: none;
+    border-color: rgba(0, 212, 255, 0.6);
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .forgot {
+    background: none;
+    border: 0;
+    color: var(--accent2);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0;
+  }
+  .submit {
+    margin-top: 6px;
+    padding: 14px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3));
+    color: #07080c;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform .1s, box-shadow .2s, filter .2s;
+    box-shadow: 0 8px 30px rgba(0, 212, 255, 0.35);
+  }
+  .submit:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+    box-shadow: 0 10px 40px rgba(0, 212, 255, 0.5);
+  }
+  .alt {
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .alt a { color: var(--accent2); text-decoration: none; font-weight: 600; }
+
+  .back {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 13px;
+    z-index: 10;
+    backdrop-filter: blur(12px);
+  }
+</style>
+</head>
+<body>
+  <div class="mesh"></div>
+  <div class="grain"></div>
+  <a class="back" href="index.html">← Mocks</a>
+  <div class="card">
+    <div class="header">
+      <div class="brand">
+        <span class="brand-logo"></span>
+        <span>TASK<span class="flow">FLOW</span></span>
+      </div>
+      <h1>Bienvenido de vuelta</h1>
+      <p class="copy">Inicia sesión para continuar tu flow.</p>
+    </div>
+    <form onsubmit="event.preventDefault()">
+      <div class="field">
+        <label><span>Email</span></label>
+        <input type="email" placeholder="tu@email.com" autocomplete="email" />
+      </div>
+      <div class="field">
+        <div class="field-row">
+          <label><span>Contraseña</span></label>
+          <button type="button" class="forgot">¿Olvidaste?</button>
+        </div>
+        <input type="password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <button type="submit" class="submit">Entrar</button>
+    </form>
+    <div class="alt">¿Nuevo en TaskFlow? <a href="#">Crear cuenta</a></div>
+  </div>
+</body>
+</html>

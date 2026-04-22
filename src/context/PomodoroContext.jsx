@@ -7,7 +7,8 @@ import { POMODORO_TYPES, POMODORO_STATUS, POMODORO_DEFAULTS } from '../constants
 import { sendBrowserNotification, playBeep } from '../utils/pomodoroNotify';
 
 const PomodoroContext = createContext(undefined);
-const STORAGE_KEY = 'wf_pomodoro';
+const STORAGE_KEY       = 'wf_pomodoro';
+const TASK_STATES_KEY   = 'wf_pomodoro_tasks';
 
 function loadPersistedState() {
   if (typeof window === 'undefined') return null;
@@ -26,24 +27,39 @@ function loadPersistedState() {
   } catch { return null; }
 }
 
+function loadTaskStates() {
+  try {
+    const raw = localStorage.getItem(TASK_STATES_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function saveTaskStates(states) {
+  try {
+    localStorage.setItem(TASK_STATES_KEY, JSON.stringify(states));
+  } catch {}
+}
+
 export function PomodoroProvider({ children }) {
   const { addSession } = usePomodoroSessions();
   const { notif, sound, autoBreak } = useSettings();
 
   const init = useRef(loadPersistedState()).current;
+  const taskStatesRef = useRef(loadTaskStates());
 
-  const [taskId,         setTaskId]         = useState(init?.taskId      ?? null);
-  const [duration,       setDurationRaw]    = useState(init?.duration    ?? POMODORO_DEFAULTS.workDuration);
-  const [sessionType,    setSessionTypeRaw] = useState(init?.sessionType ?? POMODORO_TYPES.WORK);
-  const [remaining,      setRemaining]      = useState(init?.remaining   ?? (POMODORO_DEFAULTS.workDuration * 60));
-  const [running,        setRunning]        = useState(init?.running     ?? false);
-  const [startedAt,      setStartedAt]      = useState(init?.startedAt   ?? null);
-  const [saving,         setSaving]         = useState(false);
-  const [toasts,         setToasts]         = useState([]);
+  const [taskId,      setTaskId]      = useState(init?.taskId      ?? null);
+  const [duration,    setDurationRaw] = useState(init?.duration    ?? POMODORO_DEFAULTS.workDuration);
+  const [sessionType, setSessionTypeRaw] = useState(init?.sessionType ?? POMODORO_TYPES.WORK);
+  const [remaining,   setRemaining]   = useState(init?.remaining   ?? (POMODORO_DEFAULTS.workDuration * 60));
+  const [running,     setRunning]     = useState(init?.running     ?? false);
+  const [startedAt,   setStartedAt]   = useState(init?.startedAt   ?? null);
+  const [saving,      setSaving]      = useState(false);
+  const [toasts,      setToasts]      = useState([]);
 
   const completedRef = useRef(false);
   const intervalRef  = useRef(null);
 
+  // Persist global timer state
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       taskId, duration, sessionType, remaining, running, startedAt,
@@ -74,6 +90,14 @@ export function PomodoroProvider({ children }) {
       } finally { setSaving(false); }
     }
     setStartedAt(null);
+
+    // Clear saved state for this task on completion
+    if (taskId) {
+      const next = { ...taskStatesRef.current };
+      delete next[taskId];
+      taskStatesRef.current = next;
+      saveTaskStates(next);
+    }
 
     const msg = sessionType === POMODORO_TYPES.WORK
       ? '¡Sesión de trabajo completada! Toma un descanso.'
@@ -118,9 +142,40 @@ export function PomodoroProvider({ children }) {
     return () => clearInterval(intervalRef.current);
   }, [running, startedAt, duration, handleCompletion]);
 
+  // Save current task state to the per-task map
+  const saveCurrentTaskState = useCallback((curTaskId, curRemaining, curDuration, curSessionType) => {
+    if (!curTaskId) return;
+    const wasUsed = curRemaining < curDuration * 60;
+    if (!wasUsed) return; // don't save pristine state
+    const next = {
+      ...taskStatesRef.current,
+      [curTaskId]: { remaining: curRemaining, duration: curDuration, sessionType: curSessionType },
+    };
+    taskStatesRef.current = next;
+    saveTaskStates(next);
+  }, []);
+
   const attachTask = useCallback((id) => {
-    if (!running) setTaskId(id);
-  }, [running]);
+    if (running) return; // don't switch while active
+    if (id === taskId) return; // same task
+
+    // Save current task's paused state
+    saveCurrentTaskState(taskId, remaining, duration, sessionType);
+
+    // Restore new task's saved state or use defaults
+    const saved = taskStatesRef.current[id];
+    if (saved) {
+      setDurationRaw(saved.duration);
+      setSessionTypeRaw(saved.sessionType);
+      setRemaining(saved.remaining);
+    } else {
+      setDurationRaw(POMODORO_DEFAULTS.workDuration);
+      setSessionTypeRaw(POMODORO_TYPES.WORK);
+      setRemaining(POMODORO_DEFAULTS.workDuration * 60);
+    }
+
+    setTaskId(id);
+  }, [running, taskId, remaining, duration, sessionType, saveCurrentTaskState]);
 
   const setDuration = useCallback((d) => {
     if (running) return;
@@ -141,9 +196,6 @@ export function PomodoroProvider({ children }) {
 
   const handleStart = useCallback(() => {
     completedRef.current = false;
-    // Adjust startedAt so interval math yields correct remaining on both
-    // fresh start (remaining = fullSeconds → startedAt = now) and
-    // resume after pause (remaining < fullSeconds → startedAt = now - elapsed)
     const fullSeconds = duration * 60;
     const adjusted = new Date(Date.now() - (fullSeconds - remaining) * 1000);
     setStartedAt(adjusted.toISOString());
@@ -153,7 +205,9 @@ export function PomodoroProvider({ children }) {
   const handlePause = useCallback(() => {
     setRunning(false);
     setStartedAt(null);
-  }, []);
+    // Persist paused state immediately
+    saveCurrentTaskState(taskId, remaining, duration, sessionType);
+  }, [taskId, remaining, duration, sessionType, saveCurrentTaskState]);
 
   const handleStop = useCallback(async () => {
     setRunning(false);
@@ -172,6 +226,14 @@ export function PomodoroProvider({ children }) {
     setStartedAt(null);
     setRemaining(duration * 60);
     completedRef.current = false;
+
+    // Clear saved state for this task on stop
+    if (taskId) {
+      const next = { ...taskStatesRef.current };
+      delete next[taskId];
+      taskStatesRef.current = next;
+      saveTaskStates(next);
+    }
   }, [addSession, duration, remaining, sessionType, startedAt, taskId]);
 
   const dismissToast = useCallback((id) => {

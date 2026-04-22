@@ -42,9 +42,9 @@ describe('TopBar component', () => {
     expect(screen.getByPlaceholderText('Buscar proyectos o tareas...')).toBeInTheDocument();
   });
 
-  it('should render new task button', () => {
+  it('should render create menu button', () => {
     render(<TopBar {...props} />);
-    expect(screen.getByRole('button', { name: /nueva tarea/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /crear nuevo/i })).toBeInTheDocument();
   });
 
   it('should have correct semantic structure', () => {

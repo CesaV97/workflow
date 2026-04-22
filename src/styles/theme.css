@@ -149,9 +149,19 @@ html[data-theme="light"] {
 }
 
 .task-pomodoro-badge {
-  margin-right: 6px;
-  font-size: 14px;
-  animation: pulse-dot 1.5s ease-in-out infinite;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 5px;
+  color: var(--color-accent);
+  animation: pomodoro-pulse 1.8s ease-in-out infinite;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+@keyframes pomodoro-pulse {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.88); }
 }
 
 /* Accessibility - Reduced Motion */

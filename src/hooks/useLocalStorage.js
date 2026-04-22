@@ -7,7 +7,7 @@
  *   - getItem(): Returns parsed value or undefined
  *   - setItem(value): Stores JSON-serialized value
  *   - removeItem(): Removes this key from localStorage
- *   - clear(): Clears entire localStorage
+ *   - clear(): Removes this key from localStorage
  */
 export function useLocalStorage(key) {
   return {
@@ -61,14 +61,14 @@ export function useLocalStorage(key) {
     },
 
     /**
-     * Clear entire localStorage
+     * Clear this hook's key from localStorage
      */
     clear() {
       if (typeof window === 'undefined') {
         return;
       }
 
-      window.localStorage.clear();
+      window.localStorage.removeItem(key);
     },
   };
 }

@@ -184,7 +184,7 @@
 }
 
 .btn-primary { background: var(--gradient-primary); color: #fff; font-weight: 600; }
-.btn-primary:hover:not(:disabled) { opacity: 0.88; }
+.btn-primary:hover:not(:disabled) { filter: brightness(1.18); box-shadow: 0 4px 18px rgba(88,166,255,0.45); transform: translateY(-1px); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .empty-state {

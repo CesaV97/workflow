@@ -134,7 +134,9 @@
 }
 
 .btn-primary:hover {
-  opacity: 0.88;
+  filter: brightness(1.18);
+  box-shadow: 0 4px 18px rgba(88, 166, 255, 0.45);
+  transform: translateY(-1px);
 }
 
 .empty-state {

@@ -70,11 +70,11 @@ export function Sidebar({ onNavigate, currentView }) {
       <div className="sidebar-header">
         {!collapsed && (
           <div className="sidebar-logo">
-            <img src="/taskFlow_icon.png" className="sidebar-logo-img" alt="Task Flow icon" />
+            <img src="/taskFlow_icon_2.png" className="sidebar-logo-img" alt="Task Flow icon" />
             Task Flow
           </div>
         )}
-        {collapsed && <img src="/taskFlow_icon.png" className="sidebar-logo-img" alt="Task Flow icon" />}
+        {collapsed && <img src="/taskFlow_icon_2.png" className="sidebar-logo-img" alt="Task Flow icon" />}
         <button
           className="sidebar-collapse-btn"
           onClick={() => setCollapsed(c => !c)}

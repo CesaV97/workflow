@@ -1,4 +1,4 @@
-import { useProjects } from '../../hooks/useProjects';
+import { useProjectsContext } from '../../context/ProjectsContext';
 import { useTasksContext } from '../../context/TasksContext';
 import { ProjectGrid } from './ProjectGrid';
 import { WeeklyTasksList } from './WeeklyTasksList';
@@ -21,7 +21,7 @@ function Sparkline({ values, color = 'var(--color-accent)' }) {
 }
 
 export function Dashboard({ onTaskSelect, onNavigate, onNewTask }) {
-  const projectsHook = useProjects();
+  const projectsHook = useProjectsContext();
   const tasksHook = useTasksContext();
   const { projects, loading: projectsLoading, error: projectsError } = projectsHook;
   const { tasks, loading: tasksLoading, error: tasksError } = tasksHook;

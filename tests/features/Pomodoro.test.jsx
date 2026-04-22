@@ -29,19 +29,19 @@ describe('PomodoroTimer feature', () => {
     expect(screen.getByText('25:00')).toBeInTheDocument();
   });
 
-  it('should display duration value', () => {
+  it('should display duration corner presets', () => {
     render(<PomodoroTimer taskId="1" />);
-    expect(screen.getAllByText('25 min').length).toBeGreaterThan(0);
+    expect(screen.getByTitle('25 min')).toBeInTheDocument();
   });
 
   it('should show Start button when not running', () => {
     render(<PomodoroTimer taskId="1" />);
-    expect(screen.getByRole('button', { name: /start/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /iniciar/i })).toBeInTheDocument();
   });
 
   it('should show Stop button', () => {
     render(<PomodoroTimer taskId="1" />);
-    expect(screen.getByRole('button', { name: /stop/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /detener/i })).toBeInTheDocument();
   });
 
   it('should show Work and Rest preset buttons', () => {

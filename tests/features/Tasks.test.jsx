@@ -15,8 +15,8 @@ vi.mock('../../src/context/TasksContext', () => ({
   }),
 }));
 
-vi.mock('../../src/hooks/useProjects', () => ({
-  useProjects: () => ({
+vi.mock('../../src/context/ProjectsContext', () => ({
+  useProjectsContext: () => ({
     projects: [],
     loading: false,
   }),

@@ -44,7 +44,7 @@ describe('useLocalStorage hook', () => {
     expect(getItem()).toBeUndefined();
   });
 
-  it('should clear all localStorage', () => {
+  it('should clear only the current key', () => {
     const hook1 = useLocalStorage('key1');
     const hook2 = useLocalStorage('key2');
     hook1.setItem('value1');
@@ -52,7 +52,7 @@ describe('useLocalStorage hook', () => {
 
     hook1.clear();
     expect(hook1.getItem()).toBeUndefined();
-    expect(hook2.getItem()).toBeUndefined();
+    expect(hook2.getItem()).toBe('value2');
   });
 
   it('should handle null values', () => {

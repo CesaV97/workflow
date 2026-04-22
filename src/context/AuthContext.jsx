@@ -67,7 +67,11 @@ export function AuthProvider({ children }) {
       },
       async signUp(email, password) {
         const client = getSupabaseClient();
-        const { data, error } = await client.auth.signUp({ email, password });
+        const { data, error } = await client.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: window.location.origin },
+        });
         if (error) throw error;
         if (data.user?.identities?.length === 0) {
           throw new Error('Este correo ya tiene una cuenta registrada.');

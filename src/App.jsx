@@ -9,18 +9,21 @@ import { Reports } from './features/Reports/Reports';
 import { Settings } from './features/Settings/Settings';
 import { TaskDetailPanel } from './features/TaskDetail/TaskDetailPanel';
 import { TaskFormModal } from './features/Tasks/TaskFormModal';
+import { ProjectForm } from './features/Projects/ProjectForm';
+import { Modal } from './components/Common/Modal';
+import { SpeedDial } from './components/Common/SpeedDial';
 import { AuthScreen } from './features/Auth/AuthScreen';
 import { ToastContainer } from './components/Common/Toast';
 import { useAuth } from './context/AuthContext';
+import { useProjectsContext } from './context/ProjectsContext';
 import { useTasksContext } from './context/TasksContext';
-import { useProjects } from './hooks/useProjects';
 import { migrateLocalDataToSupabase } from './lib/localMigration';
 import './App.css';
 
 export function App() {
   const { user, loading: authLoading, signOut, isConfigured, isRecovery } = useAuth();
   const { addTask, tasks } = useTasksContext();
-  const { projects, loading: projectsLoading } = useProjects();
+  const { projects, addProject } = useProjectsContext();
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedTask, setSelectedTask] = useState(null);
   const [migrationLoading, setMigrationLoading] = useState(false);
@@ -29,6 +32,8 @@ export function App() {
   const [highlightProjectId, setHighlightProjectId] = useState(null);
   const [newTaskOpen, setNewTaskOpen] = useState(false);
   const [newTaskSubmitting, setNewTaskSubmitting] = useState(false);
+  const [newProjectOpen, setNewProjectOpen] = useState(false);
+  const [newProjectSubmitting, setNewProjectSubmitting] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -69,6 +74,16 @@ export function App() {
   };
   const handleOpenNewTask = () => setNewTaskOpen(true);
 
+  const handleNewProjectSave = async (formData) => {
+    setNewProjectSubmitting(true);
+    try {
+      await addProject(formData);
+      setNewProjectOpen(false);
+    } finally {
+      setNewProjectSubmitting(false);
+    }
+  };
+
   const handleNewTaskSave = async (formData) => {
     setNewTaskSubmitting(true);
     try {
@@ -78,6 +93,12 @@ export function App() {
       setNewTaskSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (selectedTask && !tasks.some((task) => task.id === selectedTask.id)) {
+      setSelectedTask(null);
+    }
+  }, [selectedTask, tasks]);
 
   if (!isConfigured) return <AuthScreen configurationError />;
 
@@ -117,6 +138,7 @@ export function App() {
           onNavigate={handleNavigate}
           onMenuToggle={() => setSidebarOpen(o => !o)}
           onNewTask={handleOpenNewTask}
+          onNewProject={() => setNewProjectOpen(true)}
           tasks={tasks}
           projects={projects}
           onTaskSelect={handleTaskSelect}
@@ -135,6 +157,14 @@ export function App() {
         projects={projects}
         submitting={newTaskSubmitting}
       />
+      <Modal isOpen={newProjectOpen} onClose={() => !newProjectSubmitting && setNewProjectOpen(false)} title="Nuevo proyecto">
+        <ProjectForm
+          onSubmit={handleNewProjectSave}
+          onCancel={() => setNewProjectOpen(false)}
+          submitting={newProjectSubmitting}
+        />
+      </Modal>
+
       <ToastContainer />
     </div>
   );

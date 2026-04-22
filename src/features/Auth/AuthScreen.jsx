@@ -3,7 +3,11 @@ import { useAuth } from '../../context/AuthContext';
 import './AuthScreen.css';
 
 function AuthLogo() {
-  return <img src="/taskFlow_icon.png" className="auth-logo-icon" alt="Task Flow" />;
+  return (
+    <span className="auth-logo-wrap">
+      <img src="/taskFlow_icon_2.png" className="auth-logo-icon" alt="Task Flow" />
+    </span>
+  );
 }
 
 const ERROR_MAP = {
@@ -37,7 +41,7 @@ function EyeIcon({ open }) {
   );
 }
 
-function PasswordInput({ id, value, onChange, placeholder, minLength }) {
+function PasswordInput({ id, value, onChange, placeholder, minLength, autoComplete = 'current-password' }) {
   const [visible, setVisible] = useState(false);
   return (
     <div className="auth-password-wrapper">
@@ -48,6 +52,7 @@ function PasswordInput({ id, value, onChange, placeholder, minLength }) {
         onChange={onChange}
         placeholder={placeholder ?? ''}
         minLength={minLength}
+        autoComplete={autoComplete}
         required
       />
       <button
@@ -96,11 +101,11 @@ function RecoveryForm({ updatePassword, onSuccess }) {
         <form className="auth-form" onSubmit={handleSubmit}>
           <label className="auth-field">
             <span>Nueva contraseña</span>
-            <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mínimo 6 caracteres" minLength={6} />
+            <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mínimo 6 caracteres" minLength={6} autoComplete="new-password" />
           </label>
           <label className="auth-field">
             <span>Confirmar contraseña</span>
-            <PasswordInput value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Repite la contraseña" minLength={6} />
+            <PasswordInput value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Repite la contraseña" minLength={6} autoComplete="new-password" />
           </label>
           {error && <div className="auth-error">{error}</div>}
           <button className="auth-submit" disabled={submitting} type="submit">
@@ -153,6 +158,7 @@ function ForgotForm({ sendPasswordReset, onBack }) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="tu@email.com"
+                autoComplete="email"
                 required
               />
             </label>
@@ -246,12 +252,13 @@ export function AuthScreen({ configurationError = false }) {
                 value={form.email}
                 onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
                 placeholder="tu@email.com"
+                autoComplete="email"
                 required
               />
             </label>
             <label className="auth-field">
               <span>Contraseña</span>
-              <PasswordInput value={form.password} onChange={(event) => setForm((prev) => ({ ...prev, password: event.target.value }))} placeholder="Mínimo 6 caracteres" minLength={6} />
+              <PasswordInput value={form.password} onChange={(event) => setForm((prev) => ({ ...prev, password: event.target.value }))} placeholder="Mínimo 6 caracteres" minLength={6} autoComplete="new-password" />
             </label>
             {error && <div className="auth-error">{error}</div>}
             {message && <div className="auth-message">{message}</div>}
@@ -285,7 +292,8 @@ export function AuthScreen({ configurationError = false }) {
               type="email"
               value={form.email}
               onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
-              placeholder=""
+              placeholder="tu@email.com"
+              autoComplete="email"
               required
             />
           </label>
@@ -299,8 +307,9 @@ export function AuthScreen({ configurationError = false }) {
             <PasswordInput
               value={form.password}
               onChange={(event) => setForm((prev) => ({ ...prev, password: event.target.value }))}
-              placeholder=""
+              placeholder="••••••••"
               minLength={6}
+              autoComplete="current-password"
             />
           </label>
           {error && <div className="auth-error">{error}</div>}

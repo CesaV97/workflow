@@ -12,12 +12,21 @@ const mockProject = {
   createdAt: new Date().toISOString(),
 };
 
-vi.mock('../../src/hooks/useProjects', () => ({
-  useProjects: () => ({
+vi.mock('../../src/context/ProjectsContext', () => ({
+  useProjectsContext: () => ({
     projects: [mockProject],
     loading: false,
     error: '',
     addProject: vi.fn(),
+    updateProject: vi.fn(),
+    deleteProject: vi.fn(),
+  }),
+}));
+
+vi.mock('../../src/context/TasksContext', () => ({
+  useTasksContext: () => ({
+    getTasksByProjectId: vi.fn(() => []),
+    reloadTasks: vi.fn(),
   }),
 }));
 

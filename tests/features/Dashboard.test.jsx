@@ -14,10 +14,11 @@ const mockTasks = [
   { id: 't1', projectId: '1', name: 'Task Today', status: 'In Progress', endDate: todayISO, createdAt: new Date().toISOString() },
 ];
 
-vi.mock('../../src/hooks/useProjects', () => ({
-  useProjects: () => ({
+vi.mock('../../src/context/ProjectsContext', () => ({
+  useProjectsContext: () => ({
     projects: mockProjects,
     loading: false,
+    error: '',
     addProject: vi.fn(),
     updateProject: vi.fn(),
     deleteProject: vi.fn(),

@@ -3,6 +3,13 @@ import { useTheme } from '../../context/ThemeContext';
 import { usePomodoro } from '../../context/PomodoroContext';
 import './TopBar.css';
 
+function getInitials(email = '') {
+  const local = email.split('@')[0] ?? '';
+  const parts = local.split('.');
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return (local[0] ?? '?').toUpperCase();
+}
+
 function SearchIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -60,7 +67,7 @@ function SearchBar({ tasks = [], projects = [], onTaskSelect, onNavigate }) {
   const containerRef = useRef(null);
 
   const q = query.trim().toLowerCase();
-  const matchedTasks = q ? tasks.filter(t => t.name?.toLowerCase().includes(q)).slice(0, 5) : [];
+  const matchedTasks    = q ? tasks.filter(t => t.name?.toLowerCase().includes(q)).slice(0, 5) : [];
   const matchedProjects = q ? projects.filter(p => p.name?.toLowerCase().includes(q)).slice(0, 5) : [];
   const hasResults = matchedTasks.length > 0 || matchedProjects.length > 0;
 
@@ -69,18 +76,11 @@ function SearchBar({ tasks = [], projects = [], onTaskSelect, onNavigate }) {
   };
 
   const handleBlur = (e) => {
-    if (!containerRef.current?.contains(e.relatedTarget)) { setOpen(false); }
+    if (!containerRef.current?.contains(e.relatedTarget)) setOpen(false);
   };
 
-  const selectTask = (task) => {
-    setQuery(''); setOpen(false);
-    onTaskSelect?.(task);
-  };
-
-  const selectProject = (project) => {
-    setQuery(''); setOpen(false);
-    onNavigate?.('projects', project);
-  };
+  const selectTask = (task) => { setQuery(''); setOpen(false); onTaskSelect?.(task); };
+  const selectProject = (project) => { setQuery(''); setOpen(false); onNavigate?.('projects', project); };
 
   return (
     <div className="topbar-search" ref={containerRef} onBlur={handleBlur}>
@@ -133,7 +133,82 @@ function SearchBar({ tasks = [], projects = [], onTaskSelect, onNavigate }) {
   );
 }
 
-export function TopBar({ userEmail, onSignOut, onNavigate, onMenuToggle, onNewTask, tasks, projects, onTaskSelect }) {
+function CreateMenu({ onNewTask, onNewProject }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  const handleBlur = (e) => {
+    if (!ref.current?.contains(e.relatedTarget)) setOpen(false);
+  };
+
+  const pick = (fn) => { setOpen(false); fn(); };
+
+  return (
+    <div className="create-menu" ref={ref} onBlur={handleBlur}>
+      <button
+        className="create-menu-btn icon-btn"
+        onClick={() => setOpen(o => !o)}
+        aria-label="Crear nuevo"
+        aria-expanded={open}
+        title="Crear"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </button>
+      {open && (
+        <div className="create-menu-dropdown">
+          <button className="create-menu-item" onMouseDown={() => pick(onNewTask)}>
+            <span className="create-menu-icon">✓</span> Nueva tarea
+          </button>
+          <button className="create-menu-item" onMouseDown={() => pick(onNewProject)}>
+            <span className="create-menu-icon">◫</span> Nuevo proyecto
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function UserMenu({ userEmail, onSignOut }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const initials = getInitials(userEmail);
+
+  const handleBlur = (e) => {
+    if (!ref.current?.contains(e.relatedTarget)) setOpen(false);
+  };
+
+  return (
+    <div className="user-menu" ref={ref} onBlur={handleBlur}>
+      <button
+        className="user-avatar-btn"
+        onClick={() => setOpen(o => !o)}
+        aria-label="Menú de usuario"
+        aria-expanded={open}
+      >
+        <span className="user-avatar-initials">{initials}</span>
+      </button>
+
+      {open && (
+        <div className="user-menu-dropdown">
+          <div className="user-menu-email">{userEmail}</div>
+          <div className="user-menu-divider" />
+          <button className="user-menu-signout" onClick={() => { setOpen(false); onSignOut(); }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Cerrar sesión
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function TopBar({ userEmail, onSignOut, onNavigate, onMenuToggle, onNewTask, onNewProject, tasks, projects, onTaskSelect }) {
   return (
     <header className="topbar">
       <button className="topbar-menu-btn" onClick={onMenuToggle} aria-label="Menú">
@@ -141,22 +216,15 @@ export function TopBar({ userEmail, onSignOut, onNavigate, onMenuToggle, onNewTa
           <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
       </button>
+
       <SearchBar tasks={tasks} projects={projects} onTaskSelect={onTaskSelect} onNavigate={onNavigate} />
+
       <MiniTimer />
+
       <div className="topbar-actions">
         <ThemeToggle />
-        <button className="btn-nuevo" aria-label="Nueva tarea" onClick={onNewTask}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-          Nueva tarea
-        </button>
-        <div className="topbar-user">
-          <span className="topbar-user-email">{userEmail}</span>
-          <button className="topbar-profile" aria-label="Cerrar sesión" onClick={onSignOut}>
-            Salir
-          </button>
-        </div>
+        <CreateMenu onNewTask={onNewTask} onNewProject={onNewProject} />
+        <UserMenu userEmail={userEmail} onSignOut={onSignOut} />
       </div>
     </header>
   );

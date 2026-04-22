@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TaskFlow · Mock A · Split-screen</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2128;
+    --border: #30363d;
+    --text: #f0f6fc;
+    --muted: #8b949e;
+    --accent1: #4a9eff;
+    --accent2: #00d4ff;
+    --accent3: #00e5a0;
+    --danger: #ff6b6b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+  .page {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+  }
+  /* LEFT showcase */
+  .showcase {
+    position: relative;
+    padding: 56px 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(74, 158, 255, 0.22), transparent 45%),
+      radial-gradient(circle at 80% 85%, rgba(0, 229, 160, 0.18), transparent 40%),
+      linear-gradient(160deg, #0b1018, #0d1117 70%);
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    font-size: 20px;
+  }
+  .brand-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background:
+      linear-gradient(135deg, #1c2128, #0d1117),
+      radial-gradient(circle at 30% 30%, var(--accent2), transparent 60%);
+    border: 1px solid rgba(74, 158, 255, 0.35);
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .brand-logo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(0, 229, 160, 0.5), transparent 55%);
+  }
+  .brand .flow {
+    background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .pitch {
+    max-width: 440px;
+  }
+  .pitch h1 {
+    font-size: 44px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+  }
+  .pitch h1 em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .pitch p {
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0 0 28px;
+  }
+  .pitch .feats {
+    display: grid;
+    gap: 12px;
+  }
+  .feat {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    color: var(--text);
+    font-size: 14px;
+  }
+  .feat svg {
+    flex-shrink: 0;
+    color: var(--accent3);
+    margin-top: 2px;
+  }
+  /* Kanban preview */
+  .kanban {
+    position: absolute;
+    right: -80px;
+    bottom: -60px;
+    width: 520px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 16px;
+    background: rgba(22, 27, 34, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transform: perspective(1200px) rotateY(-12deg) rotateX(6deg);
+    box-shadow: -20px 40px 80px rgba(0, 0, 0, 0.5);
+    opacity: 0.92;
+  }
+  .col {
+    display: grid;
+    gap: 8px;
+  }
+  .col-head {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .kcard {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 12px;
+  }
+  .kcard .dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  .kcard .t {
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 6px;
+  }
+
+  /* RIGHT form */
+  .form-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: var(--bg);
+  }
+  .card {
+    width: 100%;
+    max-width: 400px;
+  }
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+  }
+  h2.title {
+    margin: 0 0 8px;
+    font-size: 28px;
+    letter-spacing: -0.01em;
+  }
+  p.copy {
+    color: var(--muted);
+    margin: 0 0 28px;
+  }
+  form { display: grid; gap: 16px; }
+  .field { display: grid; gap: 8px; }
+  .field-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  label span {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg2);
+    color: var(--text);
+    font-size: 15px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input:focus {
+    outline: none;
+    border-color: var(--accent2);
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.18);
+  }
+  .forgot {
+    background: none;
+    border: 0;
+    color: var(--accent2);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 0;
+  }
+  .submit {
+    margin-top: 4px;
+    padding: 13px;
+    border: 0;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3));
+    color: #0d1117;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform .1s, box-shadow .2s;
+  }
+  .submit:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(0, 212, 255, 0.35);
+  }
+  .alt {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .alt a { color: var(--accent2); text-decoration: none; font-weight: 600; }
+  .back {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    padding: 8px 14px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+  }
+  @media (max-width: 900px) {
+    .page { grid-template-columns: 1fr; }
+    .showcase { padding: 32px; min-height: 40vh; }
+    .showcase .kanban { display: none; }
+    .pitch h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+  <a class="back" href="index.html">← Mocks</a>
+  <div class="page">
+    <aside class="showcase">
+      <div class="brand">
+        <span class="brand-logo"></span>
+        <span>TASK<span class="flow">FLOW</span></span>
+      </div>
+      <div class="pitch">
+        <h1>Organiza. <em>Enfoca.</em> Entrega.</h1>
+        <p>Tareas, proyectos y Pomodoro en un solo lugar. Sincronizado en la nube, listo cuando lo estés.</p>
+        <div class="feats">
+          <div class="feat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Tableros Kanban por proyecto</span>
+          </div>
+          <div class="feat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Timer Pomodoro integrado</span>
+          </div>
+          <div class="feat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Reportes semanales automáticos</span>
+          </div>
+        </div>
+      </div>
+      <div class="kanban">
+        <div class="col">
+          <div class="col-head">Por hacer</div>
+          <div class="kcard"><span class="dot" style="background:#ff6b6b"></span>Diseño login<div class="t">Hoy</div></div>
+          <div class="kcard"><span class="dot" style="background:#ffd93d"></span>Setup auth<div class="t">Mañana</div></div>
+        </div>
+        <div class="col">
+          <div class="col-head">En curso</div>
+          <div class="kcard"><span class="dot" style="background:var(--accent2)"></span>API proyectos<div class="t">2h</div></div>
+        </div>
+        <div class="col">
+          <div class="col-head">Hecho</div>
+          <div class="kcard"><span class="dot" style="background:var(--accent3)"></span>Schema DB<div class="t">Ayer</div></div>
+          <div class="kcard"><span class="dot" style="background:var(--accent3)"></span>Deploy CI<div class="t">Lun</div></div>
+        </div>
+      </div>
+    </aside>
+    <main class="form-wrap">
+      <div class="card">
+        <div class="kicker">
+          <span>TASK<span class="flow" style="background: linear-gradient(90deg,#4a9eff,#00d4ff,#00e5a0); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">FLOW</span></span>
+        </div>
+        <h2 class="title">Bienvenido de vuelta</h2>
+        <p class="copy">Inicia sesión para continuar donde lo dejaste.</p>
+        <form onsubmit="event.preventDefault()">
+          <div class="field">
+            <label><span>Email</span></label>
+            <input type="email" placeholder="tu@email.com" autocomplete="email" />
+          </div>
+          <div class="field">
+            <div class="field-row">
+              <label><span>Contraseña</span></label>
+              <button type="button" class="forgot">¿Olvidaste?</button>
+            </div>
+            <input type="password" placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          <button type="submit" class="submit">Entrar</button>
+        </form>
+        <div class="alt">¿Nuevo en TaskFlow? <a href="#">Crear cuenta</a></div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

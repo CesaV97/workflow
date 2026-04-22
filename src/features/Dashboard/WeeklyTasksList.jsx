@@ -67,7 +67,12 @@ export function WeeklyTasksList({ tasks = [], onTaskClick, selectedTaskId }) {
             <div className="weekly-task-top">
               <div className="weekly-task-name">
                 {isActive && pomodoroTaskId === task.id && (
-                  <span className="task-pomodoro-badge" aria-label="Pomodoro activo">🍅</span>
+                  <span className="task-pomodoro-badge" aria-label="Pomodoro activo">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="13" r="8"/><polyline points="12 9 12 13 14.5 13"/>
+                      <path d="M9 3h6M12 3v2"/>
+                    </svg>
+                  </span>
                 )}
                 {task.name}
               </div>

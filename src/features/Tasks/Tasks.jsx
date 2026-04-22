@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import { useProjectsContext } from '../../context/ProjectsContext';
 import { useTasksContext } from '../../context/TasksContext';
 import { usePomodoro } from '../../context/PomodoroContext';
-import { useProjects } from '../../hooks/useProjects';
 import { TaskFormModal } from './TaskFormModal';
 import './Tasks.css';
 
@@ -15,7 +15,7 @@ export function Tasks({ onTaskSelect }) {
   const tasksHook = useTasksContext();
   const { taskId: pomodoroTaskId, isActive } = usePomodoro();
 
-  const projectsHook = useProjects();
+  const projectsHook = useProjectsContext();
   const { tasks, addTask, updateTask, deleteTask, loading, error } = tasksHook;
   const { projects, loading: projectsLoading } = projectsHook;
   const [showForm, setShowForm] = useState(false);
@@ -121,7 +121,12 @@ export function Tasks({ onTaskSelect }) {
                   <div>
                     <h3 className="task-name">
                     {isActive && pomodoroTaskId === task.id && (
-                      <span className="task-pomodoro-badge" aria-label="Pomodoro activo">🍅</span>
+                      <span className="task-pomodoro-badge" aria-label="Pomodoro activo">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="13" r="8"/><polyline points="12 9 12 13 14.5 13"/>
+                          <path d="M9 3h6M12 3v2"/>
+                        </svg>
+                      </span>
                     )}
                     {task.name}
                   </h3>

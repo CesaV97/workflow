@@ -17,8 +17,9 @@ vi.mock('../src/lib/localMigration', () => ({
   migrateLocalDataToSupabase: vi.fn(async () => ({ migrated: false })),
 }));
 
-vi.mock('../src/hooks/useProjects', () => ({
-  useProjects: () => ({
+vi.mock('../src/context/ProjectsContext', () => ({
+  ProjectsProvider: ({ children }) => children,
+  useProjectsContext: () => ({
     projects: [],
     loading: false,
     error: '',
@@ -39,6 +40,7 @@ vi.mock('../src/context/TasksContext', () => ({
     updateTask: vi.fn(),
     deleteTask: vi.fn(),
     getTasksByProjectId: vi.fn(() => []),
+    reloadTasks: vi.fn(),
   }),
 }));
 

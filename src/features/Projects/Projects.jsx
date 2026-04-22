@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { useProjects } from '../../hooks/useProjects';
+import { useProjectsContext } from '../../context/ProjectsContext';
+import { useTasksContext } from '../../context/TasksContext';
 import { ProjectForm } from './ProjectForm';
 import { ProjectDetailPanel } from './ProjectDetailPanel';
 import { Modal } from '../../components/Common/Modal';
@@ -12,7 +13,8 @@ function statusSlug(s = '') {
 }
 
 export function Projects({ highlightId, onHighlightClear, onTaskSelect }) {
-  const { projects, addProject, updateProject, deleteProject, loading, error } = useProjects();
+  const { projects, addProject, updateProject, deleteProject, loading, error } = useProjectsContext();
+  const { reloadTasks } = useTasksContext();
   const [selectedProject, setSelectedProject] = useState(null);
   const [editingProject, setEditingProject] = useState(null);
   const [showNewForm, setShowNewForm] = useState(false);
@@ -75,6 +77,7 @@ export function Projects({ highlightId, onHighlightClear, onTaskSelect }) {
     if (!ok) return;
     try {
       await deleteProject(selectedProject.id);
+      await reloadTasks();
       setSelectedProject(null);
     } catch (err) {
       setSaveError(err.message ?? 'No se pudo eliminar el proyecto.');

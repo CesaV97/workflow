@@ -119,8 +119,15 @@
   background: var(--gradient-primary);
   color: #fff;
   font-weight: 600;
-  font-size: var(--font-size-base);
   font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-new-project:hover {
+  filter: brightness(1.18);
+  box-shadow: 0 4px 18px rgba(88, 166, 255, 0.45);
+  transform: translateY(-1px);
 }
 
 .project-card {

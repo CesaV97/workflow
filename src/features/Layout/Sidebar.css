@@ -71,6 +71,13 @@
   flex-shrink: 0;
 }
 
+.sidebar-logo-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 
 .sidebar-section-label {
   font-size: 10px;

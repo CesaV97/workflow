@@ -80,7 +80,7 @@
 }
 
 .btn-nuevo {
-  background: var(--color-accent);
+  background: var(--gradient-primary);
   color: #fff;
   border: none;
   padding: 6px 14px;

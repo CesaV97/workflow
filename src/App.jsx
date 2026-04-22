@@ -18,7 +18,7 @@ import { migrateLocalDataToSupabase } from './lib/localMigration';
 import './App.css';
 
 export function App() {
-  const { user, loading: authLoading, signOut, isConfigured } = useAuth();
+  const { user, loading: authLoading, signOut, isConfigured, isRecovery } = useAuth();
   const { addTask, tasks } = useTasksContext();
   const { projects, loading: projectsLoading } = useProjects();
   const [currentView, setCurrentView] = useState('dashboard');
@@ -93,7 +93,7 @@ export function App() {
     );
   }
 
-  if (!user) return <AuthScreen />;
+  if (!user || isRecovery) return <AuthScreen />;
 
   const renderContent = () => {
     switch (currentView) {

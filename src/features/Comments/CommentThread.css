@@ -67,7 +67,7 @@
 
 .comment-submit {
   padding: var(--space-3) var(--space-4);
-  background-color: var(--color-accent);
+  background: var(--gradient-primary);
   color: var(--color-bg-primary);
   border: none;
   border-radius: var(--radius-sm);

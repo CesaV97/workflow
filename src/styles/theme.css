@@ -13,6 +13,7 @@ html[data-theme="dark"] {
   --color-border: #30363d;
 
   --color-accent: #58a6ff;
+  --gradient-primary: linear-gradient(135deg, #58a6ff 0%, #1f6feb 100%);
   --color-success: #238636;
   --color-warning: #9e6a03;
   --color-danger: #da3633;
@@ -31,6 +32,7 @@ html[data-theme="light"] {
   --color-border: #b8c0cc;
 
   --color-accent: #0969da;
+  --gradient-primary: linear-gradient(135deg, #388bfd 0%, #0969da 100%);
   --color-success: #1a7f37;
   --color-warning: #9a6700;
   --color-danger: #cf222e;

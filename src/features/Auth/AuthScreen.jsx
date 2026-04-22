@@ -2,6 +2,28 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import './AuthScreen.css';
 
+const AUTH_ERRORS = {
+  'invalid login credentials': 'Email o contraseña incorrectos.',
+  'invalid credentials': 'Email o contraseña incorrectos.',
+  'email not confirmed': 'Confirma tu email antes de iniciar sesión. Revisa tu bandeja de entrada.',
+  'user already registered': 'Ya existe una cuenta con este email. Inicia sesión.',
+  'email rate limit exceeded': 'Se alcanzó el límite de correos. Espera unos minutos e intenta de nuevo.',
+  'over email send rate limit': 'Se alcanzó el límite de correos. Espera unos minutos e intenta de nuevo.',
+  'for security purposes': 'Por seguridad, espera unos segundos antes de volver a intentarlo.',
+  'password should be at least 6 characters': 'La contraseña debe tener al menos 6 caracteres.',
+  'unable to validate email address': 'El formato del email no es válido.',
+  'signup is disabled': 'El registro de nuevas cuentas está deshabilitado.',
+};
+
+function translateError(message) {
+  if (!message) return 'No se pudo completar la operación.';
+  const lower = message.toLowerCase();
+  for (const [key, translation] of Object.entries(AUTH_ERRORS)) {
+    if (lower.includes(key)) return translation;
+  }
+  return message;
+}
+
 export function AuthScreen({ configurationError = false }) {
   const { signIn, signUp, resetPassword } = useAuth();
   const [mode, setMode] = useState('signin');
@@ -33,7 +55,7 @@ export function AuthScreen({ configurationError = false }) {
         setMessage('Correo enviado. Revisa tu bandeja de entrada para restablecer tu contraseña.');
       }
     } catch (submitError) {
-      setError(submitError.message ?? 'No se pudo completar la operación.');
+      setError(translateError(submitError.message));
     } finally {
       setSubmitting(false);
     }

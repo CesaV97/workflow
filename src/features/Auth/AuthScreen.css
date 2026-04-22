@@ -109,3 +109,19 @@
   background: rgba(35, 134, 54, 0.12);
   color: #9ce5a5;
 }
+
+.auth-forgot-link {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  cursor: pointer;
+  padding: 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-forgot-link:hover {
+  color: var(--color-text-primary);
+}

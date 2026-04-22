@@ -10,6 +10,7 @@ import { Settings } from './features/Settings/Settings';
 import { TaskDetailPanel } from './features/TaskDetail/TaskDetailPanel';
 import { TaskFormModal } from './features/Tasks/TaskFormModal';
 import { AuthScreen } from './features/Auth/AuthScreen';
+import { ResetPasswordForm } from './features/Auth/ResetPasswordForm';
 import { ToastContainer } from './components/Common/Toast';
 import { useAuth } from './context/AuthContext';
 import { useTasksContext } from './context/TasksContext';
@@ -18,7 +19,7 @@ import { migrateLocalDataToSupabase } from './lib/localMigration';
 import './App.css';
 
 export function App() {
-  const { user, loading: authLoading, signOut, isConfigured } = useAuth();
+  const { user, loading: authLoading, signOut, isConfigured, isPasswordRecovery } = useAuth();
   const { addTask, tasks } = useTasksContext();
   const { projects, loading: projectsLoading } = useProjects();
   const [currentView, setCurrentView] = useState('dashboard');
@@ -94,6 +95,8 @@ export function App() {
   }
 
   if (!user) return <AuthScreen />;
+
+  if (isPasswordRecovery) return <ResetPasswordForm />;
 
   const renderContent = () => {
     switch (currentView) {

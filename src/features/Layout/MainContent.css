@@ -6,6 +6,7 @@
   background-color: var(--color-bg-primary);
   min-width: 0;
   padding-top: var(--topbar-height);
+  min-height: 0;
 }
 
 .main-content > * {

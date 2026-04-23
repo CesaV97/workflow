@@ -78,6 +78,66 @@ input[type="datetime-local"] {
   transition: border-color var(--transition-fast);
 }
 
+/* Touch-friendly sizing */
+button, a, [role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile first: smooth scrolling */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Prevent zoom on input focus */
+@supports (padding: 0) {
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
+
+/* Responsive text sizing */
+@media (max-width: 375px) {
+  html {
+    font-size: 14px;
+  }
+  h1 {
+    font-size: 20px;
+  }
+  h2 {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+  body {
+    font-size: 15px;
+  }
+  .page {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 375px) {
+  .page {
+    padding: 8px;
+  }
+  button {
+    min-height: 44px;
+  }
+  input, textarea, select {
+    min-height: 44px;
+    padding: 10px !important;
+  }
+}
+
 input[type="date"]:focus,
 input[type="datetime-local"]:focus {
   outline: none;

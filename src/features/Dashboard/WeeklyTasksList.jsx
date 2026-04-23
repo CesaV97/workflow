@@ -34,6 +34,50 @@ function StatusPill({ status }) {
   return <span className={`task-status ${statusClass(status)}`}>{status}</span>;
 }
 
+function PriorityBadge({ priority = 'Medium' }) {
+  const colors = {
+    'High': { bg: 'rgba(220, 53, 69, 0.12)', color: '#dc3545', dot: '#dc3545' },
+    'Medium': { bg: 'rgba(255, 133, 27, 0.12)', color: '#ff8b1b', dot: '#ff8b1b' },
+    'Low': { bg: 'rgba(40, 167, 69, 0.12)', color: '#28a745', dot: '#28a745' },
+  };
+  const style = colors[priority] || colors['Medium'];
+  return (
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 4,
+      padding: '2px 6px',
+      borderRadius: '4px',
+      fontSize: '10px',
+      fontWeight: 600,
+      backgroundColor: style.bg,
+      color: style.color,
+    }}>
+      <span style={{width: 6, height: 6, borderRadius: '50%', backgroundColor: style.dot}}></span>
+      {priority}
+    </span>
+  );
+}
+
+function TimeEstimate({ hours = null }) {
+  if (!hours) return null;
+  return (
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 3,
+      padding: '2px 6px',
+      borderRadius: '4px',
+      fontSize: '10px',
+      fontWeight: 600,
+      backgroundColor: 'rgba(74, 158, 255, 0.15)',
+      color: '#4a9eff',
+    }}>
+      ⏱ {hours}h
+    </span>
+  );
+}
+
 export function WeeklyTasksList({ tasks = [], onTaskClick, selectedTaskId }) {
   const { taskId: pomodoroTaskId, isActive } = usePomodoro();
   const groups = groupTasksByDate(tasks);
@@ -78,11 +122,11 @@ export function WeeklyTasksList({ tasks = [], onTaskClick, selectedTaskId }) {
               </div>
               <StatusPill status={task.status} />
             </div>
-            {task.projectName && (
-              <div className="weekly-task-meta">
-                <span>{task.projectName}</span>
-              </div>
-            )}
+            <div className="weekly-task-meta" style={{gap: '8px', flexWrap: 'wrap', alignItems: 'center'}}>
+              {task.projectName && <span style={{fontSize: 'var(--font-size-xs)'}}>{task.projectName}</span>}
+              <PriorityBadge priority={task.priority} />
+              <TimeEstimate hours={task.estimateHours} />
+            </div>
           </div>
         ))}
       </div>

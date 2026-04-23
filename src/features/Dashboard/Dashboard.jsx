@@ -46,6 +46,7 @@ export function Dashboard({ onTaskSelect, onNavigate, onNewTask }) {
           <div className="kpi-row">
             <div className="kpi-value">{activeProjects.length}</div>
             <span className="kpi-unit">de {projects.length}</span>
+            {activeProjects.length > 0 && <span className="kpi-delta up">↗</span>}
           </div>
           <Sparkline values={[0, 1, 1, 2, 2, activeProjects.length]} />
         </div>
@@ -54,15 +55,18 @@ export function Dashboard({ onTaskSelect, onNavigate, onNewTask }) {
           <div className="kpi-row">
             <div className="kpi-value">{openTasks.length}</div>
             <span className="kpi-unit">tareas</span>
+            {openTasks.length > 2 && <span className="kpi-delta down">⚠</span>}
           </div>
+          <Sparkline values={[1, 1, 2, 2, 2, openTasks.length]} color="#ff8b1b" />
         </div>
         <div className="kpi-card">
           <div className="kpi-label">Completadas</div>
           <div className="kpi-row">
             <div className="kpi-value">{doneTasks.length}</div>
             <span className="kpi-unit">tareas</span>
-            {doneTasks.length > 0 && <span className="kpi-delta up">✓</span>}
+            {doneTasks.length === 0 && <span className="kpi-delta" style={{color: 'var(--color-text-secondary)'}}>—</span>}
           </div>
+          <Sparkline values={[0, 0, 0, 0, 0, doneTasks.length]} color="#28a745" />
         </div>
         <div className="kpi-card">
           <div className="kpi-label">Total tareas</div>
@@ -70,6 +74,7 @@ export function Dashboard({ onTaskSelect, onNavigate, onNewTask }) {
             <div className="kpi-value">{tasks.length}</div>
             <span className="kpi-unit">registradas</span>
           </div>
+          <Sparkline values={[1, 1, 2, 2, 2, tasks.length]} />
         </div>
       </div>
 
@@ -80,8 +85,10 @@ export function Dashboard({ onTaskSelect, onNavigate, onNewTask }) {
       <div className="dashboard-grid">
         <section className="dashboard-section">
           <div className="section-header">
-            <h2 className="section-title">Proyectos activos</h2>
-            <span className="section-meta">{activeProjects.length} activos</span>
+            <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+              <h2 className="section-title">Proyectos activos</h2>
+              <span className="section-badge">{activeProjects.length}</span>
+            </div>
           </div>
           {projectsLoading ? (
             <p className="empty-state">Cargando proyectos...</p>
@@ -98,13 +105,13 @@ export function Dashboard({ onTaskSelect, onNavigate, onNewTask }) {
 
         <section className="dashboard-section">
           <div className="section-header">
-            <h2 className="section-title">Esta semana</h2>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span className="section-meta">{openTasks.length} pendientes</span>
-              <button className="btn-nuevo" onClick={onNewTask} style={{ padding: '5px 12px' }}>
-                + Nueva tarea
-              </button>
+            <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+              <h2 className="section-title">Esta semana</h2>
+              <span className="section-badge">{openTasks.length}</span>
             </div>
+            <button className="btn-nuevo" onClick={onNewTask} style={{ padding: '5px 12px' }}>
+              + Nueva tarea
+            </button>
           </div>
           {tasksLoading ? (
             <p className="empty-state">Cargando tareas...</p>

@@ -238,6 +238,10 @@
 }
 
 @media (max-width: 768px) {
+  .topbar {
+    padding: 0 12px;
+    height: 48px;
+  }
   .topbar-menu-btn { display: flex; }
 
   .topbar-search { display: none; }
@@ -245,7 +249,17 @@
   .topbar-user-email { display: none; }
 
   .btn-nuevo span { display: none; }
-  .btn-nuevo { padding: 6px 10px; }
+  .btn-nuevo { padding: 8px 10px; min-width: 44px; min-height: 44px; }
+}
+
+@media (max-width: 375px) {
+  .topbar {
+    padding: 0 8px;
+    height: 48px;
+    gap: 8px;
+  }
+  .topbar-actions { gap: 6px; }
+  .user-avatar-btn { width: 36px; height: 36px; }
 }
 
 /* Mini timer */

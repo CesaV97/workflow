@@ -17,6 +17,11 @@ export function AuthProvider({ children }) {
 
     const client = getSupabaseClient();
 
+    // Check for recovery mode in URL hash/search (initial load)
+    const isRecoveryTab =
+      window.location.hash.includes('type=recovery') ||
+      window.location.search.includes('type=recovery');
+
     client.auth.getSession().then(({ data, error }) => {
       if (error) {
         setLoading(false);
@@ -25,6 +30,9 @@ export function AuthProvider({ children }) {
 
       setSession(data.session ?? null);
       setUser(data.session?.user ?? null);
+      if (isRecoveryTab && data.session?.user) {
+        setIsRecovery(true);
+      }
       setLoading(false);
     });
 
@@ -32,10 +40,10 @@ export function AuthProvider({ children }) {
       data: { subscription },
     } = client.auth.onAuthStateChange((event, nextSession) => {
       if (event === 'PASSWORD_RECOVERY') {
-        const isRecoveryTab =
+        const isRecoveryEvent =
           window.location.hash.includes('type=recovery') ||
           window.location.search.includes('type=recovery');
-        if (isRecoveryTab) {
+        if (isRecoveryEvent) {
           setIsRecovery(true);
           setSession(nextSession ?? null);
           setUser(nextSession?.user ?? null);

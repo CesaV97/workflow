@@ -5,6 +5,7 @@
   overflow: auto;
   background-color: var(--color-bg-primary);
   min-width: 0;
+  padding-top: var(--topbar-height);
 }
 
 .main-content > * {

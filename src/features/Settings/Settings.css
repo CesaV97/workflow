@@ -84,3 +84,8 @@
 .toggle:focus {
   box-shadow: 0 0 0 2px var(--color-accent);
 }
+
+.settings-vegalabs {
+  color: var(--color-accent);
+  font-weight: 500;
+}

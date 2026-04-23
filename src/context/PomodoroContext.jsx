@@ -106,16 +106,19 @@ export function PomodoroProvider({ children }) {
     if (notif) sendBrowserNotification(sessionType);
     if (sound) playBeep();
 
-    if (autoBreak) {
-      const nextType = sessionType === POMODORO_TYPES.WORK ? POMODORO_TYPES.REST : POMODORO_TYPES.WORK;
-      const nextDur  = nextType === POMODORO_TYPES.WORK
-        ? POMODORO_DEFAULTS.workDuration
-        : POMODORO_DEFAULTS.restDuration;
-      setSessionTypeRaw(nextType);
-      setDurationRaw(nextDur);
-      setRemaining(nextDur * 60);
+    if (autoBreak && sessionType === POMODORO_TYPES.WORK) {
+      // Auto-start rest after work
+      setSessionTypeRaw(POMODORO_TYPES.REST);
+      setDurationRaw(POMODORO_DEFAULTS.restDuration);
+      setRemaining(POMODORO_DEFAULTS.restDuration * 60);
       setStartedAt(new Date().toISOString());
       setRunning(true);
+      completedRef.current = false;
+    } else if (sessionType === POMODORO_TYPES.REST) {
+      // After rest: switch to work but pause (let user add comment or continue manually)
+      setSessionTypeRaw(POMODORO_TYPES.WORK);
+      setDurationRaw(POMODORO_DEFAULTS.workDuration);
+      setRemaining(POMODORO_DEFAULTS.workDuration * 60);
       completedRef.current = false;
     } else {
       setRemaining(duration * 60);

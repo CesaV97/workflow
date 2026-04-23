@@ -59,7 +59,7 @@ export function Settings() {
       </div>
 
       <div className="settings-section-label">Duraciones Pomodoro</div>
-      <div className="settings-list">
+      <div className="settings-list" style={{ marginBottom: 28 }}>
         <div className="settings-row">
           <div>
             <div className="settings-row-label">Work</div>
@@ -73,6 +73,24 @@ export function Settings() {
             <div className="settings-row-desc">Duración del descanso corto</div>
           </div>
           <span className="settings-badge" style={{ background: 'var(--color-warning)' }}>5 min</span>
+        </div>
+      </div>
+
+      <div className="settings-section-label">Acerca de</div>
+      <div className="settings-list">
+        <div className="settings-row">
+          <div>
+            <div className="settings-row-label">TaskFlow</div>
+            <div className="settings-row-desc">v1.0.0</div>
+          </div>
+        </div>
+        <div className="settings-row">
+          <div>
+            <div className="settings-row-label">Creado por</div>
+            <div className="settings-row-desc settings-vegalabs">
+              <strong>VegaLabs</strong> — Soluciones de productividad
+            </div>
+          </div>
         </div>
       </div>
     </main>

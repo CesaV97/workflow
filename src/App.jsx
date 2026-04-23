@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Sidebar } from './features/Layout/Sidebar';
 import { TopBar } from './features/Layout/TopBar';
 import { MainContent } from './features/Layout/MainContent';
+import { Footer } from './features/Layout/Footer';
 import { Dashboard } from './features/Dashboard/Dashboard';
 import { Projects } from './features/Projects/Projects';
 import { Tasks } from './features/Tasks/Tasks';
@@ -147,6 +148,7 @@ export function App() {
           {migrationError && <div className="app-banner-error">{migrationError}</div>}
           {renderContent()}
         </MainContent>
+        <Footer />
       </div>
       {selectedTask && <TaskDetailPanel task={selectedTask} onClose={handleTaskClose} />}
       <TaskFormModal

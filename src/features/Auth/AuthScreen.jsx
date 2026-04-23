@@ -94,6 +94,7 @@ function RecoveryForm({ updatePassword, onSuccess }) {
     <div className="auth-screen">
       <div className="auth-card">
         <div className="auth-header">
+          <div className="auth-by-line">by VegaLabs</div>
           <span className="auth-kicker"><AuthLogo /><span className="auth-kicker-task">TASK</span><span className="auth-kicker-flow">FLOW</span></span>
           <h1 className="auth-title">Nueva contraseña</h1>
           <p className="auth-copy">Elige una contraseña segura para tu cuenta.</p>
@@ -112,6 +113,7 @@ function RecoveryForm({ updatePassword, onSuccess }) {
             {submitting ? 'Guardando...' : 'Guardar contraseña'}
           </button>
         </form>
+        <span className="auth-version">v1.0.0</span>
       </div>
     </div>
   );
@@ -141,6 +143,7 @@ function ForgotForm({ sendPasswordReset, onBack }) {
     <div className="auth-screen">
       <div className="auth-card">
         <div className="auth-header">
+          <div className="auth-by-line">by VegaLabs</div>
           <span className="auth-kicker"><AuthLogo /><span className="auth-kicker-task">TASK</span><span className="auth-kicker-flow">FLOW</span></span>
           <h1 className="auth-title">Recuperar contraseña</h1>
           <p className="auth-copy">
@@ -171,6 +174,7 @@ function ForgotForm({ sendPasswordReset, onBack }) {
         <button className="auth-link" type="button" onClick={onBack}>
           ← Volver al inicio de sesión
         </button>
+        <span className="auth-version">v1.0.0</span>
       </div>
     </div>
   );
@@ -240,6 +244,7 @@ export function AuthScreen({ configurationError = false }) {
       <div className="auth-screen">
         <div className="auth-card">
           <div className="auth-header">
+            <div className="auth-by-line">by VegaLabs</div>
             <span className="auth-kicker"><AuthLogo /><span className="auth-kicker-task">TASK</span><span className="auth-kicker-flow">FLOW</span></span>
             <h1 className="auth-title">Crea tu cuenta</h1>
             <p className="auth-copy">Guarda proyectos, tareas y sesiones Pomodoro en la nube.</p>
@@ -266,6 +271,7 @@ export function AuthScreen({ configurationError = false }) {
               {submitting ? 'Procesando...' : 'Crear cuenta'}
             </button>
           </form>
+          <span className="auth-version">v1.0.0</span>
         </div>
         <div className="auth-secondary-card">
           <p>¿Ya tienes cuenta?{' '}
@@ -282,6 +288,7 @@ export function AuthScreen({ configurationError = false }) {
     <div className="auth-screen">
       <div className="auth-card">
         <div className="auth-header">
+          <div className="auth-by-line">by VegaLabs</div>
           <span className="auth-kicker"><AuthLogo /><span className="auth-kicker-task">TASK</span><span className="auth-kicker-flow">FLOW</span></span>
           <h1 className="auth-title">Bienvenido de vuelta</h1>
         </div>
@@ -318,6 +325,7 @@ export function AuthScreen({ configurationError = false }) {
             {submitting ? 'Procesando...' : 'Entrar'}
           </button>
         </form>
+        <span className="auth-version">v1.0.0</span>
       </div>
       <div className="auth-secondary-card">
         <p>¿Nuevo en TaskFlow?{' '}

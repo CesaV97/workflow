@@ -67,6 +67,40 @@
   margin-bottom: 24px;
 }
 
+.auth-by-line {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.auth-by-line::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin-right: 8px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
+.auth-by-line::after {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin-left: 8px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
 .auth-logo-wrap {
   display: inline-flex;
   align-items: center;
@@ -336,6 +370,22 @@
 
 .auth-link:hover {
   color: #00d4ff;
+}
+
+.auth-version {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+
+.auth-version::before {
+  content: "⚡ Powered by VegaLabs • ";
 }
 
 /* Reduce motion */
